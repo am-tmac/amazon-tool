@@ -779,3 +779,36 @@ test('AI chat and dotted tooltip underlines are removed', () => {
   }
   assert.doesNotMatch(html, /\.fba-rule-row\s*\{[^}]*dashed/);
 });
+
+test('Japan marketplace uses official 2026 JPY fulfillment and storage rules', () => {
+  for (const required of [
+    '<option value="JP">日本 / JP</option>',
+    "JP: { name: '日本站', currency: 'JPY'",
+    'const JP_FBA_FULFILLMENT_2026',
+    'const JP_FBA_STORAGE_2026',
+    'Amazon 日本站 2026',
+    'sell.amazon.co.jp/pricing',
+  ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+
+  const code = [
+    extractConstantSource('JP_FBA_FULFILLMENT_2026'),
+    extractConstantSource('JP_FBA_STORAGE_2026'),
+    extractFunctionSource('getJpFbaMetrics'),
+    extractFunctionSource('calculateJpFbaStorageFee'),
+    '({ getJpFbaMetrics, calculateJpFbaStorageFee })',
+  ].join('\n');
+  const { getJpFbaMetrics, calculateJpFbaStorageFee } = vm.runInNewContext(code);
+
+  assert.deepEqual(JSON.parse(JSON.stringify(getJpFbaMetrics([25, 18, 2], 0.25, 1200))), { tier: '小型', fee: 288 });
+  assert.deepEqual(JSON.parse(JSON.stringify(getJpFbaMetrics([25, 18, 2], 0.25, 900))), { tier: '小型', fee: 222 });
+  assert.equal(getJpFbaMetrics([35, 30, 3.3], 1, 1500).fee, 318);
+  assert.equal(getJpFbaMetrics([40, 30, 20], 9, 1500).fee, 532);
+  assert.equal(getJpFbaMetrics([70, 60, 50], 30, 1500).fee, 1532);
+  assert.equal(getJpFbaMetrics([90, 80, 70], 50, 1500).fee, 4496);
+  assert.equal(getJpFbaMetrics([100, 90, 80], 50, 1500), null);
+
+  assert.equal(calculateJpFbaStorageFee(1000, '标准尺寸', 9, 30, false), 5.676);
+  assert.equal(calculateJpFbaStorageFee(1000, '标准尺寸', 10, 31, false), 10.087);
+  assert.equal(calculateJpFbaStorageFee(1000, '大型', 9, 30, false), 3.278);
+  assert.equal(calculateJpFbaStorageFee(1000, '标准尺寸', 10, 31, true), 5.5);
+});

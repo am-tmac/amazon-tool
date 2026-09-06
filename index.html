@@ -811,7 +811,7 @@
             </div>
         </div>
         <div id="module-freight" class="calculator-home embedded-calculator">
-            <h2 class="calculator-module-title"><span>运费与仓储计算</span><span class="heading-controls"><label class="market-country">国家/站点<select id="marketCountry" onchange="updateMarketCountry()"><option value="US" selected>美国 / US</option><option value="CA">加拿大 / CA</option><option value="MX">墨西哥 / MX</option><option value="EU">欧洲 / EU</option><option value="UK">英国 / UK</option></select></label><label class="market-fx"><span class="term-tip" tabindex="0" data-tip="汇率：人民币与目标市场货币之间的换算比例。">汇率</span><span id="profitFxLabel" class="market-fx-unit">（人民币/USD）</span><input id="profitFx" data-market-default="1" type="number" min="0" step="0.01" value="7.20" oninput="this.dataset.marketDefault='0'; updateProfitCalculator()"></label><button id="profitRateUpdate" class="market-rate-update" type="button" onclick="updateProfitExchangeRate()">更新汇率</button><span id="profitMarketBadge" class="market-badge">US / USD</span></span></h2>
+            <h2 class="calculator-module-title"><span>运费与仓储计算</span><span class="heading-controls"><label class="market-country">国家/站点<select id="marketCountry" onchange="updateMarketCountry()"><option value="US" selected>美国 / US</option><option value="CA">加拿大 / CA</option><option value="MX">墨西哥 / MX</option><option value="EU">欧洲 / EU</option><option value="UK">英国 / UK</option><option value="JP">日本 / JP</option></select></label><label class="market-fx"><span class="term-tip" tabindex="0" data-tip="汇率：人民币与目标市场货币之间的换算比例。">汇率</span><span id="profitFxLabel" class="market-fx-unit">（人民币/USD）</span><input id="profitFx" data-market-default="1" type="number" min="0" step="0.01" value="7.20" oninput="this.dataset.marketDefault='0'; updateProfitCalculator()"></label><button id="profitRateUpdate" class="market-rate-update" type="button" onclick="updateProfitExchangeRate()">更新汇率</button><span id="profitMarketBadge" class="market-badge">US / USD</span></span></h2>
             <div class="calculator-grid freight-grid">
                 <section class="calculator-panel">
                     <div id="cargo-check" class="cargo-check">
@@ -1021,7 +1021,7 @@
             <section class="guide-section"><h2>汇率与曲线</h2><ul><li>切换站点会自动刷新该站点汇率；“更新汇率”读取 ExchangeRate-API 的 CNY 基准实时数据，显示为 1 目标币 = X 人民币，保留两位小数。</li><li>实时汇率页支持手动汇率覆盖。历史曲线固定以人民币为目标币，支持 1 个月、1 年、5 年；接口不可用时不影响手动换算。</li><li>历史曲线的数据点来自 Frankfurter 工作日参考汇率，不等同于平台结算汇率。</li></ul></section>
             <section class="guide-section"><h2>结果定位与提示</h2><ul><li>点击任一自动结果，页面会滚动到相关输入；缺少的字段会优先高亮，已填写完整时会高亮全部依赖项。</li><li>悬停或键盘聚焦带提示的名称可查看公式、费率范围和适用条件；提示不会改变计算值。</li><li>默认文字颜色表示需要人工确认的基础数据，强调色表示换算或联动结果。API 失败、销量不足、无历史销量和缺货会在状态文字中说明。</li></ul></section>
             <section class="guide-section"><h2>其他工具</h2><ul><li><strong>PDF 聚合：</strong>首次选择文件会按文件名中的数字顺序排序并自动处理；继续添加文件后可重新合并下载。</li><li><strong>格式转换：</strong>图片在浏览器本地转换为 JPG、PNG 或 WEBP，选择文件后点击执行并下载。</li><li><strong>背景移除：</strong>模型在本地浏览器推理，可选择 GPU/WebGPU 或 CPU；首次使用可能需要下载模型，处理期间不要关闭页面。</li><li><strong>主题切换：</strong>主题选择保存在当前浏览器，下次打开会沿用上次选择。</li></ul></section>
-            <section class="guide-section"><h2>来源与边界</h2><ul><li>美国 FBA 仓储费率：<a href="https://www.inventoryhero.ai/blog/fba-storage-fees-2026#how-to-keep-storage-costs-down" target="_blank" rel="noopener noreferrer">InventoryHero《FBA Storage Fees 2026》</a>，为本工具采用的用户提供参考表；不是实时费率接口。</li><li>2026 旺季窗口和出库计费口径：<a href="https://sellercentral.amazon.com/help/hub/reference/external/GABBX6GZPA8MSZGW?mons_sel_locale=zh_CN" target="_blank" rel="noopener noreferrer">Amazon Seller Central 2026 US FBA fulfillment fee changes</a>；公开公告给出平均旺季增量，具体 SKU 费率请以 Amazon 工具为准。</li><li>实时汇率：ExchangeRate-API（<code>open.er-api.com</code>）；历史曲线：Frankfurter（<code>api.frankfurter.dev</code>）。</li><li>FBA 分级、体积重和配送费为页面内置估算规则，最终收费以 Amazon Seller Central、入库配置服务和实际结算报表为准。</li></ul></section>
+            <section class="guide-section"><h2>来源与边界</h2><ul><li>日本站 FBA 配送和仓储采用 <a href="https://sell.amazon.co.jp/pricing" target="_blank" rel="noopener noreferrer">Amazon 日本站 2026 官方费率</a>；实际收费以 Seller Central 为准。</li><li>美国 FBA 仓储费率：<a href="https://www.inventoryhero.ai/blog/fba-storage-fees-2026#how-to-keep-storage-costs-down" target="_blank" rel="noopener noreferrer">InventoryHero《FBA Storage Fees 2026》</a>，为本工具采用的用户提供参考表；不是实时费率接口。</li><li>2026 旺季窗口和出库计费口径：<a href="https://sellercentral.amazon.com/help/hub/reference/external/GABBX6GZPA8MSZGW?mons_sel_locale=zh_CN" target="_blank" rel="noopener noreferrer">Amazon Seller Central 2026 US FBA fulfillment fee changes</a>；公开公告给出平均旺季增量，具体 SKU 费率请以 Amazon 工具为准。</li><li>实时汇率：ExchangeRate-API（<code>open.er-api.com</code>）；历史曲线：Frankfurter（<code>api.frankfurter.dev</code>）。</li><li>FBA 分级、体积重和配送费为页面内置估算规则，最终收费以 Amazon Seller Central、入库配置服务和实际结算报表为准。</li></ul></section>
         </div>
     </div>
 
@@ -1043,7 +1043,8 @@
         CA: { name: '加拿大站', currency: 'CAD', fx: 5.1, storage: 0.95, referral: 15 },
         MX: { name: '墨西哥站', currency: 'MXN', fx: 0.39, storage: null, referral: null, autoFees: false },
         EU: { name: '欧洲站', currency: 'EUR', fx: 7.8, storage: null, referral: null, autoFees: false },
-        UK: { name: '英国站', currency: 'GBP', fx: 9.1, storage: null, referral: null, autoFees: false }
+        UK: { name: '英国站', currency: 'GBP', fx: 9.1, storage: null, referral: null, autoFees: false },
+        JP: { name: '日本站', currency: 'JPY', fx: 0.048, storage: null, referral: 15.4, autoFees: true }
     };
     const US_FBA_STORAGE_2026 = Object.freeze({
         source: '2026 美国站非危险品月度仓储费率（用户提供的 InventoryHero 参考表）',
@@ -1065,6 +1066,60 @@
         peakShippingEnd: '2027-01-14',
         peakAverageSurcharge: 0.32
     });
+    const JP_FBA_FULFILLMENT_2026 = Object.freeze({
+        source: 'Amazon 日本站 2026 FBA 配送代行手数料',
+        small: { max: [25, 18, 2], weight: 0.25, regular: 288, lowPrice: 222 },
+        standard: [
+            { specialBox: [35, 30, 3.3], weight: 1, regular: 318, lowPrice: 252 },
+            { sum: 20, weight: 2, regular: 410, lowPrice: 344 },
+            { sum: 30, weight: 2, regular: 415, lowPrice: 358 },
+            { sum: 40, weight: 2, regular: 420, lowPrice: 371 },
+            { sum: 50, weight: 2, regular: 425, lowPrice: 379 },
+            { sum: 60, weight: 2, regular: 430, lowPrice: 391 },
+            { sum: 80, weight: 5, regular: 472, lowPrice: 427 },
+            { sum: 100, weight: 9, regular: 532, lowPrice: 466 }
+        ],
+        oversize: [
+            [60, 2, 589, 523], [80, 5, 624, 558], [100, 10, 675, 609], [120, 15, 781, 715],
+            [140, 20, 1020, 954], [160, 25, 1100, 1034], [180, 30, 1532, 1466], [200, 40, 1756, 1690]
+        ],
+        supersize: [[200, 50, 2755, 2689], [220, 50, 3573, 3507], [240, 50, 4496, 4430], [260, 50, 5625, 5559]]
+    });
+    const JP_FBA_STORAGE_2026 = Object.freeze({
+        source: 'Amazon 日本站 2026 FBA 在庫保管手数料',
+        general: { standard: { regular: 5.676, peak: 10.087 }, oversize: { regular: 3.278, peak: 6.984 } },
+        fashion: { standard: { regular: 3.10, peak: 5.50 }, oversize: { regular: 3.10, peak: 5.50 } }
+    });
+
+    function getJpFbaMetrics(dimensionsCm, weightKg, priceJpy) {
+        if (!Array.isArray(dimensionsCm) || dimensionsCm.length !== 3 || dimensionsCm.some(value => !Number.isFinite(value) || value <= 0) || !Number.isFinite(weightKg) || weightKg <= 0) return null;
+        const sorted = [...dimensionsCm].sort((a, b) => b - a);
+        const sum = sorted.reduce((total, value) => total + value, 0);
+        const lowPrice = Number(priceJpy) <= 1000;
+        const feeOf = rule => lowPrice ? rule.lowPrice : rule.regular;
+        const small = JP_FBA_FULFILLMENT_2026.small;
+        if (sorted.every((value, index) => value <= small.max[index]) && weightKg <= small.weight) return { tier: '小型', fee: feeOf(small) };
+        for (const rule of JP_FBA_FULFILLMENT_2026.standard) {
+            const fitsBox = rule.specialBox ? sorted.every((value, index) => value <= rule.specialBox[index]) : sum <= rule.sum;
+            if (fitsBox && weightKg <= rule.weight) return { tier: '标准尺寸', fee: feeOf(rule) };
+        }
+        for (const [maxSum, maxWeight, regular, low] of JP_FBA_FULFILLMENT_2026.oversize) {
+            if (sum <= maxSum && weightKg <= maxWeight) return { tier: '大型', fee: lowPrice ? low : regular };
+        }
+        for (const [maxSum, maxWeight, regular, low] of JP_FBA_FULFILLMENT_2026.supersize) {
+            if (sum <= maxSum && weightKg <= maxWeight) return { tier: '特大型', fee: lowPrice ? low : regular };
+        }
+        return null;
+    }
+
+    function calculateJpFbaStorageFee(volumeCm3, tier, month, storageDays, isFashion) {
+        if (![volumeCm3, month, storageDays].every(Number.isFinite) || volumeCm3 < 0 || storageDays < 0) return null;
+        const sizeClass = tier === '小型' || tier === '标准尺寸' ? 'standard' : 'oversize';
+        const table = isFashion ? JP_FBA_STORAGE_2026.fashion : JP_FBA_STORAGE_2026.general;
+        const rate = month >= 10 ? table[sizeClass].peak : table[sizeClass].regular;
+        const daysInMonth = new Date(2026, month, 0).getDate();
+        return rate * (volumeCm3 / 1000) * storageDays / daysInMonth;
+    }
 
     function currentTheme() {
         return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
@@ -1368,6 +1423,15 @@
     function calculateFbaMetrics(dimensionsCm, weightKg, options) {
         options = options || {};
         if (!dimensionsCm || dimensionsCm.length !== 3 || !Number.isFinite(weightKg) || weightKg <= 0) return null;
+        const country = options.country || (typeof document !== 'undefined' ? document.getElementById('marketCountry')?.value : 'US');
+        if (country === 'JP') {
+            const priceJpy = options.price ?? (typeof document !== 'undefined' ? Number(document.getElementById('adPrice')?.value) : 0);
+            const jp = getJpFbaMetrics(dimensionsCm, weightKg, priceJpy);
+            const dimensionsIn = dimensionsCm.map(value => value / 2.54);
+            const weightLb = weightKg / 0.45359237;
+            if (!jp) return { market: 'JP', dimensionsIn, weightLb, volumeIn3: 0, dimensionalWeightLb: weightLb, shippingWeightLb: weightLb, tier: '超出日本 FBA 范围', baseFee: null, peakSurcharge: 0, peakShipping: false, fee: null, analysis: null };
+            return { market: 'JP', dimensionsIn, weightLb, volumeIn3: 0, dimensionalWeightLb: weightLb, shippingWeightLb: weightLb, tier: jp.tier, baseFee: jp.fee, peakSurcharge: 0, peakShipping: false, fee: jp.fee, analysis: null };
+        }
         const dimensionsIn = dimensionsCm.map(value => value / 2.54);
         const weightLb = weightKg / 0.45359237;
         const analysis = getFbaTierAnalysis(dimensionsIn, weightLb);
@@ -1376,7 +1440,6 @@
         const dimensionalWeightLb = volumeIn3 / US_FBA_FULFILLMENT_2026.dimensionalWeightDivisorIn3PerLb;
         const shippingWeightLb = Math.max(weightLb, dimensionalWeightLb);
         const baseFee = estimateFbaFee(tier, shippingWeightLb);
-        const country = options.country || (typeof document !== 'undefined' ? document.getElementById('marketCountry')?.value : 'US');
         const scale = country === 'CA' ? 1.34 : 1;
         const peakShipping = options.peakShipping ?? (typeof document !== 'undefined' && Boolean(document.getElementById('fbaPeakShipping')?.checked));
         const peakSurcharge = peakShipping && baseFee !== null ? US_FBA_FULFILLMENT_2026.peakAverageSurcharge * scale : 0;
@@ -1479,6 +1542,12 @@
                 ? '待手动配置'
                 : marketCurrency + ' ' + fba.fee.toFixed(2) + (fba.peakShipping ? `（旺季 +${marketCurrency} ${fba.peakSurcharge.toFixed(2)}）` : '');
             setCargoText('fbaFeeValue', feeText);
+            if (fba.market === 'JP') {
+                setFbaRuleSummary(`<div class="fba-basis-heading">Amazon 日本站 2026</div><div>按包装三边和、重量及售价是否不超过 JPY 1,000 自动匹配。</div>`);
+                setFbaTrigger(fba.fee === null ? '超出日本站内置尺寸或重量范围，请以 Seller Central 为准。' : `已匹配日本站 ${fba.tier}；配送费含 10% 消费税。`, fba.fee !== null);
+                updateProfitCalculator();
+                return;
+            }
             const { analysis } = fba;
             const activeChecks = fba.tier === '标准件' ? analysis.standardChecks : analysis.bulkyChecks;
             const tierName = fba.tier === '标准件' ? '标准件' : '大号大件';
@@ -1994,9 +2063,13 @@
         const storageForecast = currentUsStorageForecast(volumeFt3, getUsStorageSizeClass(fba?.tier));
         const storagePeriodAllocation = calculateStoragePeriodAllocation(storageForecast);
         const usesUsStorageForecast = market.currency === 'USD' && document.getElementById('marketCountry')?.value === 'US';
+        const isJp = document.getElementById('marketCountry')?.value === 'JP';
+        const jpStorageCost = isJp && cargo && fba && fba.fee !== null
+            ? calculateJpFbaStorageFee(cargo.volumeCm3, fba.tier, new Date().getMonth() + 1, storageDaysInMonth(new Date().getMonth() + 1), false) * Math.max(0, inputNumber('profitInventoryMonths'))
+            : undefined;
         const storageCost = usesUsStorageForecast
             ? storagePeriodAllocation
-            : undefined;
+            : jpStorageCost;
         const result = calculateProfitMetrics({
             price: inputNumber('adPrice'), fx: inputNumber('profitFx') || market.fx, purchaseRmb: inputNumber('profitPurchaseRmb'), taxDiscount: inputNumber('profitTaxDiscount'), freightRateRmb: inputNumber('profitFreightRate'),
             chargeableWeightKg: cargo ? cargo.chargeableWeightKg : 0, packageVolumeM3: cargo ? cargo.volumeM3 : 0,
@@ -2038,7 +2111,9 @@
         const storage = document.getElementById('profitStorageRate');
         const referral = document.getElementById('profitReferralRate');
         const peakShipping = document.getElementById('fbaPeakShipping');
-        const isUs = document.getElementById('marketCountry')?.value === 'US';
+        const selectedCountry = document.getElementById('marketCountry')?.value;
+        const isUs = selectedCountry === 'US';
+        const isJp = selectedCountry === 'JP';
         document.getElementById('storageForecastPanel').hidden = !isUs;
         document.getElementById('legacyStorageRateField').hidden = isUs;
         document.getElementById('legacyStorageMonthsField').hidden = isUs;
@@ -2049,15 +2124,15 @@
         };
         applyFeeDefault(storage, market.storage);
         applyFeeDefault(referral, market.referral);
-        if (peakShipping) peakShipping.disabled = market.autoFees === false;
-        const currencyNames = { USD: '美元', CAD: '加元', MXN: '墨西哥比索', EUR: '欧元', GBP: '英镑' };
+        if (peakShipping) { peakShipping.disabled = market.autoFees === false || isJp; if (isJp) peakShipping.checked = false; }
+        const currencyNames = { USD: '美元', CAD: '加元', MXN: '墨西哥比索', EUR: '欧元', GBP: '英镑', JPY: '日元' };
         const currencyName = currencyNames[market.currency] || market.currency;
         const setLabel = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
         setLabel('adCpcUnit', currencyName + '/点击');
         setLabel('adPriceUnit', currencyName);
         setLabel('profitFxLabel', '（人民币/' + market.currency + '）');
         setLabel('profitPlacementLabel', 'FBA 入库配置费（' + currencyName + '/件）');
-        setLabel('profitStorageLabel', '仓储（' + currencyName + '/立方英尺/月）');
+        setLabel('profitStorageLabel', isJp ? '仓储（日本站自动估算）' : '仓储（' + currencyName + '/立方英尺/月）');
         setLabel('profitReturnLabel', '退货处理费（' + currencyName + '/件）');
         const badge = document.getElementById('profitMarketBadge');
         if (badge) badge.textContent = `${document.getElementById('marketCountry')?.value || 'US'} / ${market.currency}`;
