@@ -364,6 +364,13 @@ test('advertising calculator derives CVR, POS, CPA, ACOS, ROAS and blended cost 
   assert.equal(metrics.acoas, 0.1);
 });
 
+test('optional advertising fields use unambiguous numeric entry placeholders', () => {
+  assert.match(html, /id="adClicks"[^>]*placeholder="输入月点击量（选填）"/);
+  assert.match(html, /id="adOrders"[^>]*placeholder="输入广告订单量（选填）"/);
+  assert.match(html, /id="adMonthlyUnits"[^>]*placeholder="输入月销量（选填）"/);
+  assert.doesNotMatch(html, /placeholder="可选"/);
+});
+
 test('advertising calculator accepts a manual CVR when clicks are unavailable', () => {
   const { calculateAdMetrics } = loadProfitHelpers();
   const metrics = calculateAdMetrics({ cpc: 0.8, clicks: 0, orders: 2, cvr: 25, monthlyUnits: 20, pos: 100, price: 20 });
