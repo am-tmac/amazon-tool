@@ -172,15 +172,19 @@ function loadNumberFormatter() {
   return vm.runInNewContext(code);
 }
 
-test('dimension inputs accept multi-part text values', () => {
+test('dimension inputs accept multi-part text values with a mobile multiplication key', () => {
   const lengthInputs = html.match(/<input[^>]+class="len-input"[^>]+>/g) ?? [];
   assert.equal(lengthInputs.length, 9);
 
   for (const input of lengthInputs) {
     assert.match(input, /type="text"/);
-    assert.match(input, /inputmode="decimal"/);
+    assert.match(input, /inputmode="text"/);
     assert.match(input, /placeholder="11x11x11"/);
   }
+  assert.match(html, /class="dimension-row"/);
+  assert.match(html, /class="dimension-multiply"[^>]*data-target="cargoDimensionInput"/);
+  assert.match(html, /function insertDimensionSeparator\(targetId\)/);
+  assert.match(html, /field\.value \+= '×'/);
 });
 
 test('dimension conversion handles x and star separated values', () => {

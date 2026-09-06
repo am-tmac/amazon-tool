@@ -752,6 +752,10 @@
         input, select, textarea, .cyber-input, .market-country select, .market-fx input, .calculator-fields input, .cargo-fields input, .storage-control-grid input, .storage-control-grid select { background: var(--input-bg) !important; color: var(--ink) !important; border-color: var(--line) !important; border-radius: 6px; font-family: inherit; }
         .metric, .cargo-summary, .fba-basis, .storage-summary-item, .currency-chart, .trend { background: var(--surface); border-color: var(--line); border-radius: 7px; }
         .metric strong, .metric-money, .storage-cost, .market-badge { color: var(--blue); }
+        .dimension-row { display: grid; grid-template-columns: minmax(0, 1fr) 42px; gap: 6px; align-items: stretch; }
+        .dimension-row input { width: 100%; min-width: 0; }
+        .dimension-multiply { min-height: 38px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); color: var(--blue); font-size: 22px; font-weight: 700; cursor: pointer; }
+        .dimension-multiply:hover, .dimension-multiply:focus-visible { background: var(--blue); color: #fff; border-color: var(--blue); }
         .btn-action, .market-rate-update, .storage-expand-button { border-radius: 6px; background: var(--blue); border-color: var(--blue); color: #fff; font-family: inherit; text-transform: none; }
         footer { color: var(--muted); border-color: var(--line); }
         @media (max-width: 700px) { body { padding: 14px; } .container { padding: 16px; } }
@@ -798,21 +802,21 @@
                 <div class="section-title">尺寸</div>
                 <table class="conversion-table">
                     <tr><th colspan="2">公制</th></tr>
-                    <tr><td>米（m）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="m" placeholder="11x11x11" oninput="convertLength()"></td></tr>
-                    <tr><td>厘米（cm）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="cm" placeholder="11x11x11" oninput="convertLength()"></td></tr>
-                    <tr><td>毫米（mm）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="mm" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                    <tr><td>米（m）</td><td><input type="text" inputmode="text" class="len-input" data-unit="m" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                    <tr><td>厘米（cm）</td><td><input type="text" inputmode="text" class="len-input" data-unit="cm" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                    <tr><td>毫米（mm）</td><td><input type="text" inputmode="text" class="len-input" data-unit="mm" placeholder="11x11x11" oninput="convertLength()"></td></tr>
 
                     <tr><th colspan="2">英美制</th></tr>
-                    <tr><td>英寸（in）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="in" placeholder="11x11x11" oninput="convertLength()"></td></tr>
-                    <tr><td>英尺（ft）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="ft" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                    <tr><td>英寸（in）</td><td><input type="text" inputmode="text" class="len-input" data-unit="in" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                    <tr><td>英尺（ft）</td><td><input type="text" inputmode="text" class="len-input" data-unit="ft" placeholder="11x11x11" oninput="convertLength()"></td></tr>
                 </table>
                 <details class="optional-units">
                     <summary>展开低频单位：千米 / 码 / 英里 / 海里</summary>
                     <table class="conversion-table">
-                        <tr><td>千米（km）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="km" placeholder="11x11x11" oninput="convertLength()"></td></tr>
-                        <tr><td>码（yd）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="yd" placeholder="11x11x11" oninput="convertLength()"></td></tr>
-                        <tr><td>英里（mi）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="mi" placeholder="11x11x11" oninput="convertLength()"></td></tr>
-                        <tr><td>海里（nmi）</td><td><input type="text" inputmode="decimal" class="len-input" data-unit="nmi" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                        <tr><td>千米（km）</td><td><input type="text" inputmode="text" class="len-input" data-unit="km" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                        <tr><td>码（yd）</td><td><input type="text" inputmode="text" class="len-input" data-unit="yd" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                        <tr><td>英里（mi）</td><td><input type="text" inputmode="text" class="len-input" data-unit="mi" placeholder="11x11x11" oninput="convertLength()"></td></tr>
+                        <tr><td>海里（nmi）</td><td><input type="text" inputmode="text" class="len-input" data-unit="nmi" placeholder="11x11x11" oninput="convertLength()"></td></tr>
                     </table>
                 </details>
 
@@ -874,8 +878,8 @@
                         <div class="cargo-layout">
                             <div>
                                 <div class="cargo-fields">
-                                    <label><span class="term-tip" tabindex="0" data-tip="输入包装长宽高，单位厘米；会同步换算到英寸。">尺寸（厘米）</span><input id="cargoDimensionInput" type="text" inputmode="decimal" placeholder="11*11*11cm" oninput="syncCargoDimensionPair('cm')"></label>
-                                    <label><span class="term-tip" tabindex="0" data-tip="可直接修改英寸尺寸，支持 in 后缀；会同步回厘米。">尺寸（英寸）</span><input id="cargoDimensionInInput" type="text" inputmode="decimal" placeholder="4.33*4.33*4.33in" oninput="syncCargoDimensionPair('in')"></label>
+                                    <label><span class="term-tip" tabindex="0" data-tip="输入包装长宽高，单位厘米；会同步换算到英寸。">尺寸（厘米）</span><span class="dimension-row"><input id="cargoDimensionInput" type="text" inputmode="text" placeholder="11×11×11cm" oninput="syncCargoDimensionPair('cm')"><button class="dimension-multiply" type="button" data-target="cargoDimensionInput" onclick="insertDimensionSeparator(this.dataset.target)" aria-label="输入乘号">×</button></span></label>
+                                    <label><span class="term-tip" tabindex="0" data-tip="可直接修改英寸尺寸，支持 in 后缀；会同步回厘米。">尺寸（英寸）</span><span class="dimension-row"><input id="cargoDimensionInInput" type="text" inputmode="text" placeholder="4.33×4.33×4.33in" oninput="syncCargoDimensionPair('in')"><button class="dimension-multiply" type="button" data-target="cargoDimensionInInput" onclick="insertDimensionSeparator(this.dataset.target)" aria-label="输入乘号">×</button></span></label>
                                     <label><span class="term-tip" tabindex="0" data-tip="输入包装实际重量，单位千克；会同步换算到磅。">实重（千克）</span><input id="cargoWeightInput" type="number" min="0" step="0.01" placeholder="0.10" oninput="syncCargoWeightPair('kg')"></label>
                                     <label><span class="term-tip" tabindex="0" data-tip="可直接修改磅数；会同步回千克。">实重（磅）</span><input id="cargoWeightLbInput" type="number" min="0" step="0.01" placeholder="0.22" oninput="syncCargoWeightPair('lb')"></label>
                                     <label><span class="term-tip" tabindex="0" data-tip="头程体积重 = 包装体积（立方厘米）÷ 体积系数；可按承运商规则修改。该系数只用于头程，不用于 FBA。">头程体积系数</span><input id="cargoDivisorInput" type="number" min="1" step="1" value="6000" oninput="updateCargoCheck()"></label>
@@ -2269,6 +2273,19 @@
         if (!Number.isFinite(value) || value < 0) return;
         targetEl.value = fmtNumber(sourceUnit === 'lb' ? value * 0.45359237 : value / 0.45359237);
         updateCargoCheck();
+    }
+
+    function insertDimensionSeparator(targetId) {
+        const field = document.getElementById(targetId);
+        if (!field) return;
+        const start = Number.isInteger(field.selectionStart) ? field.selectionStart : field.value.length;
+        const end = Number.isInteger(field.selectionEnd) ? field.selectionEnd : start;
+        if (start === field.value.length && end === start) field.value += '×';
+        else field.value = field.value.slice(0, start) + '×' + field.value.slice(end);
+        field.focus();
+        const cursor = start + 1;
+        if (typeof field.setSelectionRange === 'function') field.setSelectionRange(cursor, cursor);
+        field.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
     function convertLengthValues() {
