@@ -34,7 +34,7 @@ test('unit conversion groups use concise Chinese titles in the expected order', 
 });
 
 test('unit names use Chinese labels and abbreviations on one line', () => {
-  for (const required of ['<h1>单位换算</h1>', '米（m）', '千克（kg）', '立方厘米（cm3）', '立方英尺（ft3）', '摄氏（C）']) {
+  for (const required of ['<h1>Amazon成本计算器</h1>', '米（m）', '千克（kg）', '立方厘米（cm3）', '立方英尺（ft3）', '摄氏（C）']) {
     assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   }
   assert.match(html, /\.conversion-table td:first-child\s*\{\s*white-space:\s*nowrap;/);
@@ -778,6 +778,16 @@ test('AI chat and dotted tooltip underlines are removed', () => {
     assert.doesNotMatch(html, new RegExp(removed));
   }
   assert.doesNotMatch(html, /\.fba-rule-row\s*\{[^}]*dashed/);
+});
+
+test('site is branded as Amazon成本计算器 with Jager-like dashboard styling', () => {
+  assert.match(html, /<title>Amazon成本计算器<\/title>/);
+  assert.match(html, /<h1>Amazon成本计算器<\/h1>/);
+  for (const required of [
+    '--page: #f6f7fa', '--surface: #fff', '--blue: #2962ff', '--line: #e8eaf0',
+    'border-radius: 8px', "font-family: Inter, ui-sans-serif, system-ui",
+  ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(html, /OMNI-MATRIX V6|智能核心/);
 });
 
 test('Japan marketplace uses official 2026 JPY fulfillment and storage rules', () => {

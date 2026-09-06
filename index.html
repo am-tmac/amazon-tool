@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMNI-MATRIX V6 | 智能核心</title>
+    <title>Amazon成本计算器</title>
     <link rel="icon" href="data:,">
     <script>
         try { document.documentElement.dataset.theme = localStorage.getItem('lt_tool_theme') || 'light'; } catch { document.documentElement.dataset.theme = 'light'; }
@@ -699,6 +699,62 @@
         :root[data-theme] .currency-range button { background: var(--input-bg); border-color: var(--border-strong); color: var(--text-muted); }
         :root[data-theme] .currency-display { background: var(--input-bg); }
         :root[data-theme] #bgOutput { border-color: var(--border-strong); background: var(--checker-pattern); }
+        /* Jager Monitor inspired dashboard skin */
+        :root {
+            --page: #f6f7fa;
+            --surface: #fff;
+            --ink: #1a1d24;
+            --muted: #727785;
+            --line: #e8eaf0;
+            --blue: #2962ff;
+            --green: #18a957;
+            --canvas: var(--page);
+            --panel-bg: var(--surface);
+            --bg-dark: var(--page);
+            --text-primary: var(--ink);
+            --text-muted: var(--muted);
+            --text-subtle: var(--muted);
+            --border-color: var(--line);
+            --border-strong: #d5d9e2;
+            --accent: var(--blue);
+            --accent-hover: #174edc;
+            --accent-soft: #e9efff;
+            --input-bg: var(--surface);
+        }
+        :root[data-theme="dark"] {
+            --page: #0d121a;
+            --surface: #131a25;
+            --ink: #f0f3f9;
+            --muted: #9ca6b7;
+            --line: #273040;
+            --blue: #6d96ff;
+            --green: #49cf89;
+            --canvas: var(--page);
+            --panel-bg: var(--surface);
+            --bg-dark: var(--page);
+            --text-primary: var(--ink);
+            --text-muted: var(--muted);
+            --text-subtle: var(--muted);
+            --border-color: var(--line);
+            --border-strong: #394559;
+            --accent: var(--blue);
+            --accent-hover: #8aabff;
+            --accent-soft: #202d48;
+            --input-bg: var(--surface);
+        }
+        body { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--page); color: var(--ink); padding: 24px; gap: 16px; }
+        .container, .calculator-panel, .converter-panel, .node, .overview { background: var(--surface); border-color: var(--line); border-radius: 8px; box-shadow: none; }
+        .container { padding: 22px; }
+        h1 { color: var(--ink); font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 22px; border-color: var(--line); }
+        .calculator-module-title, .section-title { font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: transparent; color: var(--ink); border-color: var(--line); text-transform: none; }
+        .nav-btn, .converter-jump, .theme-toggle { font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: var(--surface); color: var(--muted); border-color: var(--line); border-radius: 7px; text-transform: none; }
+        .nav-btn:hover, .nav-btn.active, .converter-jump:hover, .converter-jump:focus-visible { background: var(--blue); color: #fff; border-color: var(--blue); }
+        input, select, textarea, .cyber-input, .market-country select, .market-fx input, .calculator-fields input, .cargo-fields input, .storage-control-grid input, .storage-control-grid select { background: var(--input-bg) !important; color: var(--ink) !important; border-color: var(--line) !important; border-radius: 6px; font-family: inherit; }
+        .metric, .cargo-summary, .fba-basis, .storage-summary-item, .currency-chart, .trend { background: var(--surface); border-color: var(--line); border-radius: 7px; }
+        .metric strong, .metric-money, .storage-cost, .market-badge { color: var(--blue); }
+        .btn-action, .market-rate-update, .storage-expand-button { border-radius: 6px; background: var(--blue); border-color: var(--blue); color: #fff; font-family: inherit; text-transform: none; }
+        footer { color: var(--muted); border-color: var(--line); }
+        @media (max-width: 700px) { body { padding: 14px; } .container { padding: 16px; } }
     </style>
 </head>
 <body>
@@ -735,7 +791,7 @@
 
     <!-- 量子换算模块 -->
     <div id="module-converter" class="container converter-home active">
-        <h1>单位换算</h1>
+        <h1>Amazon成本计算器</h1>
         <div class="converter-workspace">
         <div class="converter-grid">
             <div class="converter-panel">
