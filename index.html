@@ -895,8 +895,9 @@
                         <div class="storage-control-grid">
                             <label><span class="term-tip" tabindex="0" data-tip="预测连续计算 12 个月。起始月决定淡季/旺季基础仓储费率。">起始月份</span><select id="storageStartMonth" oninput="updateStorageForecast()"></select></label>
                             <label><span class="term-tip" tabindex="0" data-tip="预测第一个月开始时，已经可售的 FBA 库存数量。">期初 FBA 库存</span><input id="storageOpeningUnits" type="number" min="0" step="1" placeholder="例如 300" oninput="updateStorageForecast()"></label>
-                            <label><span class="term-tip" tabindex="0" data-tip="库存利用率附加费以过去 13 周实际发货量作为首月基准。后续月份会逐日滚动采用预测中的实际可售量。">过去 13 周销量</span><input id="storagePast13WeekSales" type="number" min="0" step="1" placeholder="例如 1300" oninput="updateStorageForecast()"></label>
-                            <label class="storage-switch"><input id="storageNewSeller" type="checkbox" oninput="updateStorageForecast()"><span class="term-tip" tabindex="0" data-tip="仅在新卖家资格有效且日均库存体积低于 25 立方英尺时，使用新卖家低库存费率；否则自动回到常规费率。">新卖家低库存资格</span></label>
+                            <label id="storageUsHistoryField"><span class="term-tip" tabindex="0" data-tip="库存利用率附加费以过去 13 周实际发货量作为首月基准。后续月份会逐日滚动采用预测中的实际可售量。">过去 13 周销量</span><input id="storagePast13WeekSales" type="number" min="0" step="1" placeholder="例如 1300" oninput="updateStorageForecast()"></label>
+                            <label id="storageUsNewSellerField" class="storage-switch"><input id="storageNewSeller" type="checkbox" oninput="updateStorageForecast()"><span class="term-tip" tabindex="0" data-tip="仅在新卖家资格有效且日均库存体积低于 25 立方英尺时，使用新卖家低库存费率；否则自动回到常规费率。">新卖家低库存资格</span></label>
+                            <label id="storageJpFashionField" class="storage-switch" hidden><input id="storageJpFashion" type="checkbox" oninput="updateStorageForecast()"><span class="term-tip" tabindex="0" data-tip="日本站服装服饰、鞋靴与箱包使用独立仓储费率。">服装/鞋靴/箱包</span></label>
                         </div>
                         <div class="storage-batch-controls" aria-label="仓储预测批量操作">
                             <label><span class="term-tip" tabindex="0" data-tip="填写后点击批量填充，会将该销量写入前 N 个月（默认 12 个月）；留空表示不修改销量列。">批量月销量</span><input id="storageBatchSales" type="number" min="0" step="1" placeholder="留空不改"></label>
@@ -1148,7 +1149,8 @@
     const JP_FBA_STORAGE_2026 = Object.freeze({
         source: 'Amazon 日本站 2026 FBA 在庫保管手数料',
         general: { standard: { regular: 5.676, peak: 10.087 }, oversize: { regular: 3.278, peak: 6.984 } },
-        fashion: { standard: { regular: 3.10, peak: 5.50 }, oversize: { regular: 3.10, peak: 5.50 } }
+        fashion: { standard: { regular: 3.10, peak: 5.50 }, oversize: { regular: 3.10, peak: 5.50 } },
+        forecastMonths: 12
     });
 
     function getJpFbaMetrics(dimensionsCm, weightKg, priceJpy) {
@@ -1832,6 +1834,41 @@
         };
     }
 
+    function calculateJpFbaStorageForecast(values) {
+        const startMonth = Math.max(1, Math.min(12, Number(values.startMonth) || 1));
+        const openingUnits = Math.max(0, Number(values.openingUnits) || 0);
+        const unitVolumeCm3 = Math.max(0, Number(values.unitVolumeCm3) || 0);
+        const tier = values.tier || '标准尺寸';
+        const isFashion = Boolean(values.isFashion);
+        const plan = Array.isArray(values.plan) ? values.plan : [];
+        const rows = [];
+        let inventory = openingUnits;
+
+        for (let index = 0; index < JP_FBA_STORAGE_2026.forecastMonths; index += 1) {
+            const monthNumber = storageMonthNumber(startMonth, index);
+            const monthPlan = plan[index] || {};
+            const plannedSales = Math.max(0, Number(monthPlan.sales) || 0);
+            const restockUnits = Math.max(0, Number(monthPlan.restock) || 0);
+            const opening = inventory;
+            const available = opening + restockUnits;
+            const soldUnits = Math.min(plannedSales, available);
+            const shortageUnits = Math.max(0, plannedSales - soldUnits);
+            inventory = available - soldUnits;
+            const endingUnits = inventory;
+            const averageUnits = (opening + endingUnits) / 2;
+            const daysInMonth = storageDaysInMonth(monthNumber);
+            const storageCost = calculateJpFbaStorageFee(unitVolumeCm3 * averageUnits, tier, monthNumber, daysInMonth, isFashion);
+            rows.push({ index, monthNumber, plannedSales, restockUnits, openingUnits: opening, endingUnits, averageUnits, soldUnits, shortageUnits, storageCost, tier, isFashion });
+        }
+
+        return {
+            market: 'JP', rows,
+            totalStorageCost: rows.reduce((total, row) => total + row.storageCost, 0),
+            totalSoldUnits: rows.reduce((total, row) => total + row.soldUnits, 0),
+            remainingUnits: inventory, tier, isFashion
+        };
+    }
+
     function calculateStoragePeriodAllocation(forecast) {
         if (!forecast || !(Number(forecast.totalSoldUnits) > 0)) return null;
         const totalStorageCost = Number(forecast.totalStorageCost);
@@ -1870,17 +1907,30 @@
         }));
     }
 
-    function currentUsStorageForecast(volumeFt3, sizeClass) {
-        if (document.getElementById('marketCountry')?.value !== 'US') return null;
-        return calculateUsFbaStorageForecast({
-            startMonth: inputNumber('storageStartMonth', new Date().getMonth() + 1),
-            openingUnits: inputNumber('storageOpeningUnits'),
-            prior13WeekSales: inputNumber('storagePast13WeekSales'),
-            newSellerEligible: document.getElementById('storageNewSeller')?.checked,
-            plan: storageForecastPlanFromPage(),
-            unitVolumeFt3: volumeFt3,
-            sizeClass
-        });
+    function currentStorageForecast(volumeFt3, sizeClass, volumeCm3, fbaTier) {
+        const market = document.getElementById('marketCountry')?.value;
+        if (market === 'US') {
+            return calculateUsFbaStorageForecast({
+                startMonth: inputNumber('storageStartMonth', new Date().getMonth() + 1),
+                openingUnits: inputNumber('storageOpeningUnits'),
+                prior13WeekSales: inputNumber('storagePast13WeekSales'),
+                newSellerEligible: document.getElementById('storageNewSeller')?.checked,
+                plan: storageForecastPlanFromPage(),
+                unitVolumeFt3: volumeFt3,
+                sizeClass
+            });
+        }
+        if (market === 'JP') {
+            return calculateJpFbaStorageForecast({
+                startMonth: inputNumber('storageStartMonth', new Date().getMonth() + 1),
+                openingUnits: inputNumber('storageOpeningUnits'),
+                plan: storageForecastPlanFromPage(),
+                unitVolumeCm3: volumeCm3,
+                tier: fbaTier,
+                isFashion: document.getElementById('storageJpFashion')?.checked
+            });
+        }
+        return null;
     }
 
     function formatStorageWeeks(weeks) {
@@ -1910,9 +1960,10 @@
     function renderStorageForecast(forecast, fx) {
         const panel = document.getElementById('storageForecastPanel');
         if (!panel) return;
-        const isUs = document.getElementById('marketCountry')?.value === 'US';
-        panel.hidden = !isUs;
-        if (!isUs || !forecast) return;
+        const market = document.getElementById('marketCountry')?.value;
+        const supported = market === 'US' || market === 'JP';
+        panel.hidden = !supported;
+        if (!supported || !forecast) return;
 
         forecast.rows.forEach(row => {
             const rowEl = document.getElementById(`storageForecastRow${row.index}`);
@@ -1921,14 +1972,18 @@
             const costEl = document.getElementById(`storageCost${row.index}`);
             const statusEl = document.getElementById(`storageStatus${row.index}`);
             if (averageEl) averageEl.textContent = fmtNumber(row.averageUnits);
-            if (weeksEl) weeksEl.textContent = formatStorageWeeks(row.utilizationWeeks);
+            if (weeksEl) weeksEl.textContent = market === 'JP' ? `${fmtNumber(row.endingUnits)}件` : formatStorageWeeks(row.utilizationWeeks);
             if (costEl) costEl.textContent = money(row.storageCost);
             if (statusEl) {
                 const status = [];
                 if (row.shortageUnits > 0) status.push(`缺货 ${fmtNumber(row.shortageUnits)}件`);
-                if (row.newProductObservation) status.push('新品观察期');
-                else if (row.newSellerEligible) status.push('新卖家费率');
-                else if (row.surchargeRate > 0) status.push(`附加 $${row.surchargeRate.toFixed(2)}/ft³`);
+                if (market === 'US') {
+                    if (row.newProductObservation) status.push('新品观察期');
+                    else if (row.newSellerEligible) status.push('新卖家费率');
+                    else if (row.surchargeRate > 0) status.push(`附加 $${row.surchargeRate.toFixed(2)}/ft³`);
+                } else if (market === 'JP') {
+                    status.push(row.isFashion ? '服饰费率' : (row.monthNumber >= 10 ? '旺季费率' : '常规费率'));
+                }
                 statusEl.textContent = status.join('；') || '正常';
             }
             if (rowEl) rowEl.classList.toggle('is-shortage', row.shortageUnits > 0);
@@ -1946,7 +2001,8 @@
         renderStorageReplenishment(forecast);
         const status = document.getElementById('storageForecastStatus');
         if (status) {
-            if (forecast.totalSoldUnits <= 0) status.textContent = '填写每月计划销量后，系统会计算库存利用率与仓储费。';
+            if (forecast.totalSoldUnits <= 0) status.textContent = '填写每月计划销量后，系统会计算库存与仓储费。';
+            else if (market === 'JP') status.textContent = `预测结束库存 ${fmtNumber(forecast.remainingUnits)} 件；日本站按商品体积、尺寸等级、月份及服饰类别计算。`;
             else if (!forecast.hasHistory) status.textContent = '新品观察期内只按基础仓储费率估算；满 13 周后按滚动实际销量判断库存利用率附加费。';
             else status.textContent = `预测结束库存 ${fmtNumber(forecast.remainingUnits)} 件；费率按 ${forecast.sizeClass === 'standard' ? '标准尺寸' : '大件'}、日均库存和滚动 13 周发货量计算。`;
         }
@@ -2120,16 +2176,14 @@
         const market = currentMarket();
         const autoFeesSupported = market.autoFees !== false;
         const volumeFt3 = cargo ? cargo.volumeM3 * 1000000 / 28316.8466 : 0;
-        const storageForecast = currentUsStorageForecast(volumeFt3, getUsStorageSizeClass(fba?.tier));
+        const storageForecast = currentStorageForecast(volumeFt3, getUsStorageSizeClass(fba?.tier), cargo?.volumeCm3 || 0, fba?.tier);
         const storagePeriodAllocation = calculateStoragePeriodAllocation(storageForecast);
         const usesUsStorageForecast = market.currency === 'USD' && document.getElementById('marketCountry')?.value === 'US';
         const isJp = document.getElementById('marketCountry')?.value === 'JP';
-        const jpStorageCost = isJp && cargo && fba && fba.fee !== null
-            ? calculateJpFbaStorageFee(cargo.volumeCm3, fba.tier, new Date().getMonth() + 1, storageDaysInMonth(new Date().getMonth() + 1), false) * Math.max(0, inputNumber('profitInventoryMonths'))
-            : undefined;
-        const storageCost = usesUsStorageForecast
+        const usesDetailedStorageForecast = usesUsStorageForecast || isJp;
+        const storageCost = usesDetailedStorageForecast
             ? storagePeriodAllocation
-            : jpStorageCost;
+            : undefined;
         const result = calculateProfitMetrics({
             price: inputNumber('adPrice'), fx: inputNumber('profitFx') || market.fx, purchaseRmb: inputNumber('profitPurchaseRmb'), taxDiscount: inputNumber('profitTaxDiscount'), freightRateRmb: inputNumber('profitFreightRate'),
             chargeableWeightKg: cargo ? cargo.chargeableWeightKg : 0, packageVolumeM3: cargo ? cargo.volumeM3 : 0,
@@ -2174,9 +2228,24 @@
         const selectedCountry = document.getElementById('marketCountry')?.value;
         const isUs = selectedCountry === 'US';
         const isJp = selectedCountry === 'JP';
-        document.getElementById('storageForecastPanel').hidden = !isUs;
-        document.getElementById('legacyStorageRateField').hidden = isUs;
-        document.getElementById('legacyStorageMonthsField').hidden = isUs;
+        const supportsDetailedStorage = selectedCountry === 'US' || selectedCountry === 'JP';
+        document.getElementById('storageForecastPanel').hidden = !supportsDetailedStorage;
+        document.getElementById('legacyStorageRateField').hidden = supportsDetailedStorage;
+        document.getElementById('legacyStorageMonthsField').hidden = supportsDetailedStorage;
+        const usHistory = document.getElementById('storageUsHistoryField');
+        const usNewSeller = document.getElementById('storageUsNewSellerField');
+        const jpFashion = document.getElementById('storageJpFashionField');
+        if (usHistory) usHistory.hidden = !isUs;
+        if (usNewSeller) usNewSeller.hidden = !isUs;
+        if (jpFashion) jpFashion.hidden = !isJp;
+        const storageTitle = document.getElementById('storageForecastTitle');
+        const storageSource = document.querySelector('.storage-forecast-source');
+        const storageTable = document.querySelector('.storage-forecast-table');
+        const storageWeeksHeader = storageTable?.querySelector('thead th:nth-child(5)');
+        if (storageTitle) storageTitle.textContent = isJp ? '日本站 FBA 月度仓储' : '仓储费每月详细计算（美国）';
+        if (storageSource) storageSource.textContent = isJp ? '2026 日本站官方费率' : '2026 美国站非危险品费率参考';
+        if (storageTable) storageTable.setAttribute('aria-label', isJp ? '日本 FBA 仓储费每月详细计算' : '美国仓储费每月详细计算');
+        if (storageWeeksHeader) storageWeeksHeader.textContent = isJp ? '月末库存' : '利用率';
         if (fx && (!fx.value || fx.dataset.marketDefault === '1')) { fx.value = Number(market.fx).toFixed(2); fx.dataset.marketDefault = '1'; }
         const applyFeeDefault = (field, value) => {
             if (!field || field.dataset.marketDefault !== '1') return;

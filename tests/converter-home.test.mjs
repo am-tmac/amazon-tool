@@ -456,6 +456,39 @@ test('US FBA storage forecast uses daily-average inventory, seasonal rates, roll
   assert.equal(shortageForecast.rows[0].endingUnits, 0);
 });
 
+test('Japan storage forecast supports the same 12-month sales and replenishment workflow', () => {
+  const code = [
+    extractConstantSource('JP_FBA_STORAGE_2026'),
+    extractFunctionSource('storageMonthNumber'),
+    extractFunctionSource('storageDaysInMonth'),
+    extractFunctionSource('calculateJpFbaStorageFee'),
+    extractFunctionSource('calculateJpFbaStorageForecast'),
+    '({ calculateJpFbaStorageForecast })',
+  ].join('\n');
+  const { calculateJpFbaStorageForecast } = vm.runInNewContext(code);
+  const forecast = calculateJpFbaStorageForecast({
+    startMonth: 9,
+    openingUnits: 3000,
+    unitVolumeCm3: 1000,
+    tier: '标准尺寸',
+    isFashion: false,
+    plan: Array.from({ length: 12 }, () => ({ sales: 1000, restock: 0 })),
+  });
+
+  assert.deepEqual(JSON.parse(JSON.stringify(forecast.rows.slice(0, 3).map(row => row.averageUnits))), [2500, 1500, 500]);
+  assert.equal(forecast.rows[0].storageCost, 14190);
+  assert.equal(forecast.rows[1].storageCost, 15130.5);
+  assert.equal(forecast.rows[2].storageCost, 5043.5);
+  assert.equal(forecast.rows[3].shortageUnits, 1000);
+  assert.equal(forecast.totalSoldUnits, 3000);
+  assert.equal(forecast.remainingUnits, 0);
+
+  for (const required of [
+    '日本站 FBA 月度仓储', '2026 日本站官方费率', 'function currentStorageForecast',
+    "selectedCountry === 'US' || selectedCountry === 'JP'", "market === 'JP'",
+  ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+});
+
 test('US storage uses a forecast-period weighted allocation, including zero-sales months', () => {
   const { calculateUsFbaStorageForecast, calculateStoragePeriodAllocation } = loadStorageHelpers();
   const { calculateProfitMetrics } = loadProfitHelpers();
