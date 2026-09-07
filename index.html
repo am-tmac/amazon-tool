@@ -1360,9 +1360,25 @@
         const profit = price - totalCost;
         const margin = price ? profit / price : 0;
         const monthlyProfit = profit * monthlyUnits;
-        const variableRate = adRate + referral / price;
-        const fixedCost = purchase + freight + fba + storage;
-        const breakEvenPrice = variableRate < 1 ? fixedCost / (1 - variableRate) : Infinity;
+        let breakEvenPrice = Infinity;
+        if (adRate < 1) {
+            if (market === 'JP') {
+                const maximumCandidate = Math.max(1000, Math.ceil((purchase + freight + fba + storage) / Math.max(0.01, 1 - adRate) * 4));
+                for (let candidate = 1; candidate <= maximumCandidate; candidate += 1) {
+                    const candidateReferral = calculateJpReferralFee(candidate, values.category || 'other', true).total;
+                    const candidateFba = getJpFbaMetrics(dimensionsCm, weightKg, candidate)?.fee;
+                    if (!Number.isFinite(candidateFba)) continue;
+                    if (candidate - purchase - freight - candidateReferral - candidateFba - storage - candidate * adRate >= 0) {
+                        breakEvenPrice = candidate;
+                        break;
+                    }
+                }
+            } else {
+                const variableRate = adRate + referral / price;
+                const fixedCost = purchase + freight + fba + storage;
+                breakEvenPrice = variableRate < 1 ? fixedCost / (1 - variableRate) : Infinity;
+            }
+        }
         return { unavailable: false, market, price, purchase, freight, referral, fba, storage, ad, totalCost, profit, margin, monthlyProfit, breakEvenPrice, monthlyUnits, tier, chargeableWeightKg };
     }
 
@@ -1419,6 +1435,7 @@
         const maximum = Math.max(...costs.map(([, value]) => value), 1);
         document.getElementById('quickCostBreakdown').innerHTML = costs.map(([label, value]) => `<div class="quick-cost-row"><span>${label}</span><span class="quick-cost-track"><i style="width:${Math.max(2, value / maximum * 100).toFixed(1)}%"></i></span><strong>${formatQuickMoney(value, currency)}</strong></div>`).join('');
         const risks = [];
+        risks.push(['', '仓储按当前月份费率估算；未计退货、促销及特殊服务费']);
         if (result.margin < 0) risks.push(['warning', '当前售价预计亏损']);
         else if (result.margin < 0.2) risks.push(['warning', '利润率低于20%，抗波动空间较小']);
         else risks.push(['', '当前估算利润率高于20%']);

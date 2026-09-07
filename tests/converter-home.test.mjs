@@ -459,7 +459,28 @@ test('quick Japan estimate calculates automated referral, FBA, storage, ads, pro
   assert.ok(Math.abs(result.profit - 704.8924444444442) < 1e-9);
   assert.ok(Math.abs(result.margin - 0.23496414814814806) < 1e-9);
   assert.ok(Math.abs(result.monthlyProfit - 70489.24444444443) < 1e-8);
-  assert.ok(result.breakEvenPrice > 2000 && result.breakEvenPrice < 3000);
+  assert.equal(result.breakEvenPrice, 2036);
+});
+
+test('quick Japan break-even recalculates category commission and low-price FBA at each candidate price', () => {
+  const code = [
+    extractConstantSource('JP_FBA_FULFILLMENT_2026'),
+    extractConstantSource('JP_FBA_STORAGE_2026'),
+    extractConstantSource('JP_REFERRAL_RULES_2026'),
+    extractFunctionSource('calculateJpReferralFee'),
+    extractFunctionSource('getJpFbaMetrics'),
+    extractFunctionSource('calculateJpFbaStorageFee'),
+    extractFunctionSource('calculateQuickEstimate'),
+    '({ calculateQuickEstimate })',
+  ].join('\n');
+  const { calculateQuickEstimate } = vm.runInNewContext(code);
+  const result = calculateQuickEstimate({
+    market: 'JP', category: 'consumer-electronics', price: 1000, purchaseRmb: 20, fx: 0.05,
+    dimensionsCm: [25, 18, 2], weightKg: 0.25, freightRateRmb: 10,
+    monthlyUnits: 200, storageDays: 15, adRate: 5, month: 10,
+  });
+  assert.equal(result.fba, 222);
+  assert.equal(result.breakEvenPrice, 789);
 });
 
 test('quick US estimate reuses automated US FBA and simple storage assumptions', () => {
