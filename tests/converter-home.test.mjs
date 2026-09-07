@@ -421,6 +421,76 @@ test('Japan price changes refresh the displayed FBA fee and use precise JPY exch
   assert.match(html, /profitFx\.value = \(liveRates\.CNY \/ liveRates\[market\.currency\]\)\.toFixed\(marketFxDecimals\(market\.currency\)\)/);
 });
 
+test('quick calculator is the default seller workflow with simple required inputs and core outputs', () => {
+  for (const required of [
+    'id="quickModeButton"', 'id="professionalModeButton"', 'id="quickCalculator"',
+    'id="quickMarket"', 'id="quickCategory"', 'id="quickPrice"', 'id="quickPurchaseRmb"',
+    'id="quickLength"', 'id="quickWidth"', 'id="quickHeight"', 'id="quickWeight"',
+    'id="quickFreightRate"', 'id="quickMonthlyUnits"', 'id="quickStorageDays"', 'id="quickAdRate"',
+    'id="quickProfitValue"', 'id="quickMarginValue"', 'id="quickMonthlyProfitValue"', 'id="quickBreakEvenPriceValue"',
+    'id="quickCostBreakdown"', 'id="quickRiskList"', 'function calculateQuickEstimate', 'function updateQuickCalculator',
+  ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(html, /id="quickModeButton"[^>]*class="[^"]*active/);
+});
+
+test('quick Japan estimate calculates automated referral, FBA, storage, ads, profit and break-even', () => {
+  const code = [
+    extractConstantSource('JP_FBA_FULFILLMENT_2026'),
+    extractConstantSource('JP_FBA_STORAGE_2026'),
+    extractConstantSource('JP_REFERRAL_RULES_2026'),
+    extractFunctionSource('calculateJpReferralFee'),
+    extractFunctionSource('getJpFbaMetrics'),
+    extractFunctionSource('calculateJpFbaStorageFee'),
+    extractFunctionSource('calculateQuickEstimate'),
+    '({ calculateQuickEstimate })',
+  ].join('\n');
+  const { calculateQuickEstimate } = vm.runInNewContext(code);
+  const result = calculateQuickEstimate({
+    market: 'JP', category: 'home-kitchen', price: 3000, purchaseRmb: 48, fx: 0.048,
+    dimensionsCm: [20, 10, 10], weightKg: 0.2, freightRateRmb: 8,
+    monthlyUnits: 100, storageDays: 30, adRate: 10, month: 9,
+  });
+  assert.equal(result.purchase, 1000);
+  assert.equal(result.referral, 508.2);
+  assert.equal(result.fba, 420);
+  assert.equal(result.freight, 55.55555555555555);
+  assert.ok(Math.abs(result.storage - 11.352) < 1e-10);
+  assert.equal(result.ad, 300);
+  assert.ok(Math.abs(result.profit - 704.8924444444442) < 1e-9);
+  assert.ok(Math.abs(result.margin - 0.23496414814814806) < 1e-9);
+  assert.ok(Math.abs(result.monthlyProfit - 70489.24444444443) < 1e-8);
+  assert.ok(result.breakEvenPrice > 2000 && result.breakEvenPrice < 3000);
+});
+
+test('quick US estimate reuses automated US FBA and simple storage assumptions', () => {
+  const code = [
+    extractConstantSource('US_FBA_STORAGE_2026'),
+    extractConstantSource('US_FBA_FULFILLMENT_2026'),
+    extractConstantSource('JP_FBA_FULFILLMENT_2026'),
+    extractConstantSource('JP_FBA_STORAGE_2026'),
+    extractConstantSource('JP_REFERRAL_RULES_2026'),
+    extractFunctionSource('calculateJpReferralFee'),
+    extractFunctionSource('getJpFbaMetrics'),
+    extractFunctionSource('calculateJpFbaStorageFee'),
+    extractFunctionSource('getFbaTierAnalysis'),
+    extractFunctionSource('getFbaSizeTier'),
+    extractFunctionSource('estimateFbaFee'),
+    extractFunctionSource('calculateFbaMetrics'),
+    extractFunctionSource('calculateQuickEstimate'),
+    '({ calculateQuickEstimate })',
+  ].join('\n');
+  const { calculateQuickEstimate } = vm.runInNewContext(code);
+  const result = calculateQuickEstimate({
+    market: 'US', price: 29.99, purchaseRmb: 50, fx: 7.2,
+    dimensionsCm: [20, 10, 10], weightKg: 0.2, freightRateRmb: 8,
+    monthlyUnits: 100, storageDays: 30, adRate: 10, month: 9,
+  });
+  assert.equal(result.unavailable, false);
+  assert.ok(Number.isFinite(result.fba) && result.fba > 0);
+  assert.ok(Number.isFinite(result.storage) && result.storage >= 0);
+  assert.ok(Number.isFinite(result.profit));
+});
+
 test('Japan labels use the correct sales-total and manual inbound-cost wording', () => {
   assert.match(html, /id="adPriceLabel"/);
   assert.match(html, /买家支付总销售额（含税）/);
