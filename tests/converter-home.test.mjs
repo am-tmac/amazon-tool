@@ -871,9 +871,8 @@ test('automatic result values guide users to their dependent inputs and explain 
   assert.match(html, /targetField\.focus\(\{ preventScroll: true \}\)/);
 });
 
-test('footer keeps contacts together on a second line', () => {
-  assert.match(html, /<footer>[\s\S]*?SYSTEM CORE DESIGNED BY CHE RUI[\s\S]*?class="footer-contacts"[\s\S]*?小红书：bibliobibule[\s\S]*?VX：bibliobibule[\s\S]*?<\/footer>/);
-  assert.match(html, /footer\s*\{[\s\S]*?flex-direction:\s*column/s);
+test('legacy author and contact footer is removed', () => {
+  assert.doesNotMatch(html, /SYSTEM CORE DESIGNED BY CHE RUI|小红书：bibliobibule|VX：bibliobibule|footer-contacts/);
 });
 
 test('theme switch defaults to light, persists the choice, and redraws chart colors', () => {
