@@ -924,7 +924,7 @@
                         <p id="storageForecastStatus" class="storage-forecast-status"></p>
                     </details>
                     <div class="calculator-fields">
-                        <label>头程（人民币/计费千克）<input id="profitFreightRate" type="number" min="0" step="0.01" value="8" oninput="updateProfitCalculator()"></label><label id="legacyStorageRateField"><span id="profitStorageLabel" class="term-tip" tabindex="0" data-tip="非美国站仓储/件 = 包装体积（立方米）× 35.3147 × 仓储单价 × 平均库存月数。">仓储（美元/立方英尺/月）</span><input id="profitStorageRate" data-market-default="1" type="number" min="0" step="0.001" value="0.78" oninput="this.dataset.marketDefault='0'; updateProfitCalculator()"></label><label id="legacyStorageMonthsField"><span class="term-tip" tabindex="0" data-tip="非美国站使用手动平均库存月数估算仓储成本。">平均库存月数</span><input id="profitInventoryMonths" type="number" min="0" step="0.01" value="1" oninput="updateProfitCalculator()"></label><label><span class="term-tip" tabindex="0" data-tip="退货率用于估算售价损失；退货处理费按每件退货额外计入成本。两者共同影响退货成本和利润。">退货率 %</span><input id="profitReturnRate" type="number" min="0" max="100" step="0.01" value="8" oninput="updateProfitCalculator()"></label><label><span id="profitReturnLabel" class="term-tip" tabindex="0" data-tip="每件退货产生的处理费用，按退货率折算后计入利润结果中的退货成本。">退货处理费（美元/件）</span><input id="profitReturnHandling" type="number" min="0" step="0.01" value="0" oninput="updateProfitCalculator()"></label><label>促销费 %<input id="profitPromoRate" type="number" min="0" max="100" step="0.01" value="0" oninput="updateProfitCalculator()"></label>
+                        <label>头程（人民币/计费千克）<input id="profitFreightRate" type="number" min="0" step="0.01" value="8" oninput="updateProfitCalculator()"></label><label id="legacyStorageRateField"><span id="profitStorageLabel" class="term-tip" tabindex="0" data-tip="非美国站仓储/件 = 包装体积（立方米）× 35.3147 × 仓储单价 × 平均库存月数。">仓储（美元/立方英尺/月）</span><input id="profitStorageRate" data-market-default="1" type="number" min="0" step="0.001" value="0.78" oninput="this.dataset.marketDefault='0'; updateProfitCalculator()"></label><label id="legacyStorageMonthsField"><span class="term-tip" tabindex="0" data-tip="非美国站使用手动平均库存月数估算仓储成本。">平均库存月数</span><input id="profitInventoryMonths" type="number" min="0" step="0.01" value="1" oninput="updateProfitCalculator()"></label><label><span class="term-tip" tabindex="0" data-tip="退货率用于估算售价损失；退货处理费按每件退货额外计入成本。两者共同影响退货成本和利润。">退货率 %</span><input id="profitReturnRate" type="number" min="0" max="100" step="0.01" value="0" oninput="updateProfitCalculator()"></label><label><span id="profitReturnLabel" class="term-tip" tabindex="0" data-tip="每件退货产生的处理费用，按退货率折算后计入利润结果中的退货成本。">退货处理费（美元/件）</span><input id="profitReturnHandling" type="number" min="0" step="0.01" value="0" oninput="updateProfitCalculator()"></label><label>促销费 %<input id="profitPromoRate" type="number" min="0" max="100" step="0.01" value="0" oninput="updateProfitCalculator()"></label>
                     </div>
                 </section>
             </div>
@@ -934,7 +934,7 @@
             <div class="calculator-grid ad-calculator-grid">
                 <section class="calculator-panel">
                     <div class="calculator-fields">
-                        <label><span class="field-label term-tip" tabindex="0" data-tip="单件商品的销售价格。"><span>售价</span><span class="field-hint" id="adPriceUnit">美元</span></span><input id="adPrice" type="number" min="0" step="0.01" value="29.99" oninput="updateAdCalculator()"></label>
+                        <label><span class="field-label term-tip" tabindex="0" data-tip="单件商品的销售价格。"><span id="adPriceLabel">售价</span><span class="field-hint" id="adPriceUnit">美元</span></span><input id="adPrice" type="number" min="0" step="0.01" value="29.99" oninput="updateAdCalculator(); updateCargoCheck()"></label>
                         <label><span class="field-label term-tip" tabindex="0" data-tip="每次点击成本：广告花费 ÷ 广告点击量。"><span>CPC</span><span class="field-hint" id="adCpcUnit">美元/点击</span></span><input id="adCpc" type="number" min="0" step="0.01" value="0.80" oninput="updateAdCalculator()"></label>
                         <label><span class="field-label term-tip" tabindex="0" data-tip="统计周期内的广告点击总数。"><span>月点击量</span><span class="field-hint">Clicks</span></span><input id="adClicks" type="number" min="0" step="1" placeholder="输入月点击量（选填）" oninput="updateAdCalculator()"></label>
                         <label><span class="field-label term-tip" tabindex="0" data-tip="由广告归因带来的订单数。"><span>广告订单量</span><span class="field-hint">Paid orders</span></span><input id="adOrders" type="number" min="0" step="1" placeholder="输入广告订单量（选填）" oninput="updateAdCalculator()"></label>
@@ -958,7 +958,9 @@
                     <div class="calculator-fields">
                         <label>含税采购成本（人民币）<input id="profitPurchaseRmb" type="number" min="0" step="0.01" value="50" oninput="updateProfitCalculator()"></label>
                         <label>采购退税/折扣 %<input id="profitTaxDiscount" type="number" min="0" max="100" step="0.01" value="0" oninput="updateProfitCalculator()"></label>
-                        <label>佣金 %<input id="profitReferralRate" data-market-default="1" type="number" min="0" max="100" step="0.01" value="15" oninput="this.dataset.marketDefault='0'; updateProfitCalculator()"></label>
+                        <label id="profitReferralCategoryField" hidden><span class="term-tip" tabindex="0" data-tip="日本站销售佣金按商品类别与售价阶梯自动计算，并按官方说明加计10%消费税。">日本站商品类别</span><select id="profitReferralCategory" onchange="updateProfitCalculator()"><option value="home-kitchen">家居&厨房</option><option value="consumer-electronics">消费电子/电脑</option><option value="beauty">美妆/健康/个护</option><option value="sports">运动/户外/玩具</option><option value="grocery">食品&饮料</option><option value="pet">宠物用品</option><option value="baby">母婴用品</option><option value="clothing">服装&配饰</option><option value="shoes-bags">鞋靴/箱包</option><option value="jewelry">珠宝首饰</option><option value="media">图书/DVD/音乐/软件</option><option value="other">其他类别</option></select></label>
+                        <label id="profitReferralRateField">佣金 %<input id="profitReferralRate" data-market-default="1" type="number" min="0" max="100" step="0.01" value="15" oninput="this.dataset.marketDefault='0'; updateProfitCalculator()"></label>
+                        <label id="profitJpReferralTaxField" class="storage-switch" hidden><input id="profitJpReferralTax" type="checkbox" checked oninput="updateProfitCalculator()"><span class="term-tip" tabindex="0" data-tip="Amazon日本官方费率表中的销售佣金为未税金额；默认另加10%消费税。">佣金加计10%消费税</span></label>
                         <label><span id="profitPlacementLabel" class="term-tip" tabindex="0" data-tip="FBA 入库配置费（Inventory Placement Service Fee）是亚马逊将库存分配至入库地点时按件收取的费用，不是 FBA 配送费。请按 Send to Amazon 或结算报表中的每件实际费用填写；该项会单独计入总成本。">FBA 入库配置费（美元/件）</span><input id="profitPlacementFee" type="number" min="0" step="0.01" value="0" oninput="updateProfitCalculator()"></label>
                     </div>
                     <div class="profit-breakdown">
@@ -1099,6 +1101,43 @@
     let liveRates = {};
     let lastBase = "CNY";
     let manualCurrencyRate = null;
+    const MARKET_MONEY_FIELDS = ['adPrice', 'adCpc', 'profitPlacementFee', 'profitReturnHandling'];
+    const MARKET_INPUT_STATE = {};
+    let activeMarketCode = 'US';
+
+    function marketFxDecimals(currency) { return currency === 'JPY' ? 6 : 2; }
+
+    function saveMarketInputState(code) {
+        if (!code) return;
+        const fx = document.getElementById('profitFx');
+        const peakShipping = document.getElementById('fbaPeakShipping');
+        MARKET_INPUT_STATE[code] = {
+            values: Object.fromEntries(MARKET_MONEY_FIELDS.map(id => [id, document.getElementById(id)?.value || ''])),
+            fx: fx?.value || '',
+            fxManual: fx?.dataset.marketDefault === '0',
+            peakShipping: Boolean(peakShipping?.checked)
+        };
+    }
+
+    function restoreMarketInputState(code, market) {
+        const state = MARKET_INPUT_STATE[code];
+        for (const id of MARKET_MONEY_FIELDS) {
+            const field = document.getElementById(id);
+            if (!field) continue;
+            if (state) field.value = state.values[id] ?? '';
+            else if (code === 'JP') field.value = id === 'adPrice' ? '3000' : id === 'adCpc' ? '80' : '0';
+            else if (code === 'US') field.value = id === 'adPrice' ? '29.99' : id === 'adCpc' ? '0.80' : '0';
+            else field.value = '';
+        }
+        const fx = document.getElementById('profitFx');
+        if (fx) {
+            fx.value = state?.fx || Number(market.fx).toFixed(marketFxDecimals(market.currency));
+            fx.dataset.marketDefault = state?.fxManual ? '0' : '1';
+        }
+        const peakShipping = document.getElementById('fbaPeakShipping');
+        if (peakShipping) peakShipping.checked = code === 'US' ? Boolean(state?.peakShipping) : false;
+    }
+
     const MARKET_CONFIG = {
         US: { name: '美国站', currency: 'USD', fx: 7.2, storage: 0.78, referral: 15 },
         CA: { name: '加拿大站', currency: 'CAD', fx: 5.1, storage: 0.95, referral: 15 },
@@ -1152,6 +1191,37 @@
         fashion: { standard: { regular: 3.10, peak: 5.50 }, oversize: { regular: 3.10, peak: 5.50 } },
         forecastMonths: 12
     });
+    const JP_REFERRAL_RULES_2026 = Object.freeze({
+        'home-kitchen': [[750, 0.05], [Infinity, 0.154]],
+        'consumer-electronics': [[750, 0.05], [Infinity, 0.084]],
+        beauty: [[750, 0.05], [1500, 0.084], [Infinity, 0.104]],
+        sports: [[750, 0.05], [Infinity, 0.104]],
+        grocery: [[750, 0.05], [1500, 0.084], [Infinity, 0.104]],
+        pet: [[750, 0.05], [1500, 0.084], [Infinity, 0.154]],
+        baby: [[750, 0.05], [1500, 0.084], [Infinity, 0.154]],
+        clothing: [[750, 0.05], [2500, 0.084], [3000, 0.124], [Infinity, 'clothing-split']],
+        'shoes-bags': [[750, 0.05], [7500, 0.124], [Infinity, 'shoes-split']],
+        jewelry: [[750, 0.05], [10000, 0.104], [Infinity, 'jewelry-split']],
+        media: [[Infinity, 0.154]],
+        other: [[750, 0.05], [Infinity, 0.154]]
+    });
+
+    function calculateJpReferralFee(priceJpy, category, includeTax) {
+        const price = Math.max(0, Number(priceJpy) || 0);
+        const rules = JP_REFERRAL_RULES_2026[category] || JP_REFERRAL_RULES_2026.other;
+        const rule = rules.find(([limit]) => price <= limit) || rules[rules.length - 1];
+        const rate = rule[1];
+        let base;
+        if (rate === 'clothing-split') base = 3000 * 0.124 + Math.max(0, price - 3000) * 0.084;
+        else if (rate === 'shoes-split') base = 7500 * 0.124 + Math.max(0, price - 7500) * 0.064;
+        else if (rate === 'jewelry-split') base = 10000 * 0.104 + Math.max(0, price - 10000) * 0.064;
+        else base = price * rate;
+        if (category !== 'media') base = Math.max(30, base);
+        base = Math.round(base * 100) / 100;
+        const tax = includeTax ? Math.round(base * 0.10 * 100) / 100 : 0;
+        const total = Math.round((base + tax) * 100) / 100;
+        return { base, tax, total, effectiveRate: price > 0 ? Math.round(total / price * 10000) / 10000 : 0 };
+    }
 
     function getJpFbaMetrics(dimensionsCm, weightKg, priceJpy) {
         if (!Array.isArray(dimensionsCm) || dimensionsCm.length !== 3 || dimensionsCm.some(value => !Number.isFinite(value) || value <= 0) || !Number.isFinite(weightKg) || weightKg <= 0) return null;
@@ -2117,7 +2187,10 @@
         const fx = Math.max(0, Number(values.fx) || 0);
         const purchase = fx > 0 ? Math.max(0, Number(values.purchaseRmb) || 0) * (1 - Math.min(100, Math.max(0, Number(values.taxDiscount) || 0)) / 100) / fx : 0;
         const freight = fx > 0 ? Math.max(0, Number(values.freightRateRmb) || 0) * Math.max(0, Number(values.chargeableWeightKg) || 0) / fx : 0;
-        const referral = price * Math.min(100, Math.max(0, Number(values.referralRate) || 0)) / 100;
+        const referralFee = Number(values.referralFee);
+        const referral = Number.isFinite(referralFee)
+            ? Math.max(0, referralFee)
+            : price * Math.min(100, Math.max(0, Number(values.referralRate) || 0)) / 100;
         const fba = Math.max(0, Number(values.fbaFee) || 0);
         const volumeFt3 = Math.max(0, Number(values.packageVolumeM3) || 0) * 1000000 / 28316.8466;
         const forecastStorage = Number(values.storageCost);
@@ -2128,9 +2201,11 @@
             : volumeFt3 * Math.max(0, Number(values.storageRate) || 0) * Math.max(0, Number(values.inventoryMonths) || 0);
         const ad = Math.max(0, Number(values.adCost) || 0);
         const promo = price * Math.min(100, Math.max(0, Number(values.promoRate) || 0)) / 100;
-        const returns = price * Math.min(100, Math.max(0, Number(values.returnRate) || 0)) / 100 + Math.max(0, Number(values.returnHandling) || 0);
+        const returnRate = Math.min(100, Math.max(0, Number(values.returnRate) || 0)) / 100;
+        const returns = returnRate * (price + Math.max(0, Number(values.returnHandling) || 0));
         const placement = Math.max(0, Number(values.placementFee) || 0);
-        const totalCost = storage === null ? null : purchase + freight + referral + fba + storage + ad + promo + returns + placement;
+        const costsUnavailable = Boolean(values.fbaCostUnavailable) || storage === null;
+        const totalCost = costsUnavailable ? null : purchase + freight + referral + fba + storage + ad + promo + returns + placement;
         const profit = totalCost === null ? null : price - totalCost;
         const preAdContribution = totalCost === null ? null : price - (totalCost - ad);
         const breakEvenAcos = price > 0 && preAdContribution !== null ? Math.max(0, preAdContribution / price) : null;
@@ -2184,10 +2259,13 @@
         const storageCost = usesDetailedStorageForecast
             ? storagePeriodAllocation
             : undefined;
+        const jpReferral = isJp
+            ? calculateJpReferralFee(inputNumber('adPrice'), document.getElementById('profitReferralCategory')?.value || 'home-kitchen', document.getElementById('profitJpReferralTax')?.checked !== false)
+            : null;
         const result = calculateProfitMetrics({
             price: inputNumber('adPrice'), fx: inputNumber('profitFx') || market.fx, purchaseRmb: inputNumber('profitPurchaseRmb'), taxDiscount: inputNumber('profitTaxDiscount'), freightRateRmb: inputNumber('profitFreightRate'),
             chargeableWeightKg: cargo ? cargo.chargeableWeightKg : 0, packageVolumeM3: cargo ? cargo.volumeM3 : 0,
-            referralRate: inputNumber('profitReferralRate') || market.referral, fbaFee: fba ? fba.fee : 0, storageRate: inputNumber('profitStorageRate') || market.storage, inventoryMonths: inputNumber('profitInventoryMonths'), storageCost, storageCostUnavailable: usesUsStorageForecast && storagePeriodAllocation === null,
+            referralRate: inputNumber('profitReferralRate') || market.referral, referralFee: jpReferral?.total, fbaFee: fba?.fee, fbaCostUnavailable: autoFeesSupported && (!fba || fba.fee === null), storageRate: inputNumber('profitStorageRate') || market.storage, inventoryMonths: inputNumber('profitInventoryMonths'), storageCost, storageCostUnavailable: usesDetailedStorageForecast && storagePeriodAllocation === null,
             adCost: ad.blendedCost, promoRate: inputNumber('profitPromoRate'), returnRate: inputNumber('profitReturnRate'), returnHandling: inputNumber('profitReturnHandling'), placementFee: inputNumber('profitPlacementFee'), targetMargin: inputNumber('profitTargetMargin'), cvr: ad.cvr,
         });
         const fx = inputNumber('profitFx') || market.fx;
@@ -2220,12 +2298,17 @@
     }
 
     function updateMarketCountry() {
+        const selectedCountry = document.getElementById('marketCountry')?.value || 'US';
+        if (selectedCountry !== activeMarketCode) {
+            saveMarketInputState(activeMarketCode);
+            restoreMarketInputState(selectedCountry, MARKET_CONFIG[selectedCountry]);
+            activeMarketCode = selectedCountry;
+        }
         const market = currentMarket();
         const fx = document.getElementById('profitFx');
         const storage = document.getElementById('profitStorageRate');
         const referral = document.getElementById('profitReferralRate');
         const peakShipping = document.getElementById('fbaPeakShipping');
-        const selectedCountry = document.getElementById('marketCountry')?.value;
         const isUs = selectedCountry === 'US';
         const isJp = selectedCountry === 'JP';
         const supportsDetailedStorage = selectedCountry === 'US' || selectedCountry === 'JP';
@@ -2238,6 +2321,12 @@
         if (usHistory) usHistory.hidden = !isUs;
         if (usNewSeller) usNewSeller.hidden = !isUs;
         if (jpFashion) jpFashion.hidden = !isJp;
+        const referralCategoryField = document.getElementById('profitReferralCategoryField');
+        const referralRateField = document.getElementById('profitReferralRateField');
+        const referralTaxField = document.getElementById('profitJpReferralTaxField');
+        if (referralCategoryField) referralCategoryField.hidden = !isJp;
+        if (referralRateField) referralRateField.hidden = isJp;
+        if (referralTaxField) referralTaxField.hidden = !isJp;
         const storageTitle = document.getElementById('storageForecastTitle');
         const storageSource = document.querySelector('.storage-forecast-source');
         const storageTable = document.querySelector('.storage-forecast-table');
@@ -2246,21 +2335,22 @@
         if (storageSource) storageSource.textContent = isJp ? '2026 日本站官方费率' : '2026 美国站非危险品费率参考';
         if (storageTable) storageTable.setAttribute('aria-label', isJp ? '日本 FBA 仓储费每月详细计算' : '美国仓储费每月详细计算');
         if (storageWeeksHeader) storageWeeksHeader.textContent = isJp ? '月末库存' : '利用率';
-        if (fx && (!fx.value || fx.dataset.marketDefault === '1')) { fx.value = Number(market.fx).toFixed(2); fx.dataset.marketDefault = '1'; }
+        if (fx && (!fx.value || fx.dataset.marketDefault === '1')) { fx.value = Number(market.fx).toFixed(marketFxDecimals(market.currency)); fx.dataset.marketDefault = '1'; }
         const applyFeeDefault = (field, value) => {
             if (!field || field.dataset.marketDefault !== '1') return;
             field.value = value === null ? '' : value;
         };
         applyFeeDefault(storage, market.storage);
         applyFeeDefault(referral, market.referral);
-        if (peakShipping) { peakShipping.disabled = market.autoFees === false || isJp; if (isJp) peakShipping.checked = false; }
+        if (peakShipping) peakShipping.disabled = market.autoFees === false || isJp;
         const currencyNames = { USD: '美元', CAD: '加元', MXN: '墨西哥比索', EUR: '欧元', GBP: '英镑', JPY: '日元' };
         const currencyName = currencyNames[market.currency] || market.currency;
         const setLabel = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
         setLabel('adCpcUnit', currencyName + '/点击');
         setLabel('adPriceUnit', currencyName);
+        setLabel('adPriceLabel', isJp ? '买家支付总销售额（含税）' : '售价');
         setLabel('profitFxLabel', '（人民币/' + market.currency + '）');
-        setLabel('profitPlacementLabel', 'FBA 入库配置费（' + currencyName + '/件）');
+        setLabel('profitPlacementLabel', isJp ? '其他每件FBA/入仓费用（日元/件）' : 'FBA 入库配置费（' + currencyName + '/件）');
         setLabel('profitStorageLabel', isJp ? '仓储（日本站自动估算）' : '仓储（' + currencyName + '/立方英尺/月）');
         setLabel('profitReturnLabel', '退货处理费（' + currencyName + '/件）');
         const badge = document.getElementById('profitMarketBadge');
@@ -2286,7 +2376,7 @@
             const marketRate = Number(data?.rates?.[requestedCurrency]);
             if (data?.result !== 'success' || !Number.isFinite(marketRate) || marketRate <= 0) throw new Error('invalid rate');
             if (currentMarket().currency !== requestedCurrency) return;
-            fx.value = (1 / marketRate).toFixed(2);
+            fx.value = (1 / marketRate).toFixed(marketFxDecimals(requestedCurrency));
             fx.dataset.marketDefault = '1';
             updateProfitCalculator();
             button.textContent = '已更新';
@@ -2490,7 +2580,7 @@
                 const market = currentMarket();
                 const profitFx = document.getElementById('profitFx');
                 if (profitFx && !document.getElementById('currencyManualToggle')?.checked && liveRates.CNY && liveRates[market.currency]) {
-                    profitFx.value = (liveRates.CNY / liveRates[market.currency]).toFixed(2);
+                    profitFx.value = (liveRates.CNY / liveRates[market.currency]).toFixed(marketFxDecimals(market.currency));
                     profitFx.dataset.marketDefault = '1';
                     updateProfitCalculator();
                 }

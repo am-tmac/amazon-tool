@@ -142,9 +142,11 @@ function loadFbaHelpers() {
 
 function loadProfitHelpers() {
   const code = [
+    extractConstantSource('JP_REFERRAL_RULES_2026'),
+    extractFunctionSource('calculateJpReferralFee'),
     extractFunctionSource('calculateAdMetrics'),
     extractFunctionSource('calculateProfitMetrics'),
-    '({ calculateAdMetrics, calculateProfitMetrics })',
+    '({ calculateJpReferralFee, calculateAdMetrics, calculateProfitMetrics })',
   ].join('\n');
   return vm.runInNewContext(code);
 }
@@ -385,6 +387,81 @@ test('advertising calculator leaves POS unavailable until monthly sales are prov
   assert.equal(metrics.blendedCost, null);
 });
 
+test('Japan referral fees use category tiers, minimum fee, and consumption tax correctly', () => {
+  const { calculateJpReferralFee } = loadProfitHelpers();
+  assert.deepEqual(JSON.parse(JSON.stringify(calculateJpReferralFee(3000, 'home-kitchen', true))), { base: 462, tax: 46.2, total: 508.2, effectiveRate: 0.1694 });
+  assert.deepEqual(JSON.parse(JSON.stringify(calculateJpReferralFee(666, 'consumer-electronics', true))), { base: 33.3, tax: 3.33, total: 36.63, effectiveRate: 0.055 });
+  assert.equal(calculateJpReferralFee(500, 'consumer-electronics', false).base, 30);
+  assert.equal(calculateJpReferralFee(3000, 'beauty', true).base, 312);
+  assert.equal(calculateJpReferralFee(4000, 'clothing', true).base, 456);
+  assert.equal(calculateJpReferralFee(12000, 'jewelry', true).base, 1168);
+});
+
+test('profit treats unknown automatic FBA and storage costs as unavailable', () => {
+  const { calculateProfitMetrics } = loadProfitHelpers();
+  const unknownFba = calculateProfitMetrics({ price: 3000, fx: 0.048, purchaseRmb: 48, referralFee: 300, fbaCostUnavailable: true, storageCost: 10 });
+  assert.equal(unknownFba.totalCost, null);
+  assert.equal(unknownFba.profit, null);
+  const unknownStorage = calculateProfitMetrics({ price: 3000, fx: 0.048, purchaseRmb: 48, referralFee: 300, fbaFee: 420, storageCostUnavailable: true });
+  assert.equal(unknownStorage.totalCost, null);
+  assert.equal(unknownStorage.profit, null);
+});
+
+test('return handling fee is weighted by return rate', () => {
+  const { calculateProfitMetrics } = loadProfitHelpers();
+  const result = calculateProfitMetrics({ price: 1000, fx: 1, returnRate: 8, returnHandling: 100, storageCost: 0 });
+  assert.equal(result.returns, 88);
+});
+
+test('Japan price changes refresh the displayed FBA fee and use precise JPY exchange rates', () => {
+  assert.match(html, /id="adPrice"[^>]*oninput="updateAdCalculator\(\); updateCargoCheck\(\)"/);
+  assert.match(html, /function marketFxDecimals\(currency\)/);
+  assert.match(html, /currency === 'JPY' \? 6 : 2/);
+  assert.match(html, /fx\.value = \(1 \/ marketRate\)\.toFixed\(marketFxDecimals\(requestedCurrency\)\)/);
+  assert.match(html, /profitFx\.value = \(liveRates\.CNY \/ liveRates\[market\.currency\]\)\.toFixed\(marketFxDecimals\(market\.currency\)\)/);
+});
+
+test('Japan labels use the correct sales-total and manual inbound-cost wording', () => {
+  assert.match(html, /id="adPriceLabel"/);
+  assert.match(html, /买家支付总销售额（含税）/);
+  assert.match(html, /其他每件FBA\/入仓费用/);
+  assert.match(html, /id="profitReturnRate"[^>]*value="0"/);
+});
+
+test('market-specific money fields and US peak selection are isolated across switches', () => {
+  for (const required of [
+    'const MARKET_INPUT_STATE', 'let activeMarketCode', 'function saveMarketInputState', 'function restoreMarketInputState',
+    "'adPrice'", "'adCpc'", "'profitPlacementFee'", "'profitReturnHandling'", 'peakShipping',
+  ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+});
+
+test('Japan standard 40cm tier keeps the low-price fee through 1,000 JPY', () => {
+  const code = [
+    extractConstantSource('JP_FBA_FULFILLMENT_2026'),
+    extractFunctionSource('getJpFbaMetrics'),
+    '({ getJpFbaMetrics })',
+  ].join('\n');
+  const { getJpFbaMetrics } = vm.runInNewContext(code);
+  assert.equal(getJpFbaMetrics([20, 10, 10], 0.2, 1000).fee, 371);
+  assert.equal(getJpFbaMetrics([20, 10, 10], 0.2, 1000.01).fee, 420);
+});
+
+test('Japan profit uses category referral total and keeps US manual referral behavior', () => {
+  const { calculateProfitMetrics } = loadProfitHelpers();
+  const jp = calculateProfitMetrics({
+    price: 3000, fx: 0.048, purchaseRmb: 48, taxDiscount: 0, freightRateRmb: 0, chargeableWeightKg: 0,
+    referralRate: 15.4, referralFee: 508.2, fbaFee: 420, storageCost: 10, adCost: 0, promoRate: 0,
+    returnRate: 0, returnHandling: 0, placementFee: 0, targetMargin: 20, cvr: 0.1,
+  });
+  assert.equal(jp.purchase, 1000);
+  assert.equal(jp.referral, 508.2);
+  assert.equal(jp.totalCost, 1938.2);
+  assert.equal(jp.profit, 1061.8);
+
+  const us = calculateProfitMetrics({ price: 100, fx: 5, purchaseRmb: 0, referralRate: 15, fbaFee: 0, storageCost: 0 });
+  assert.equal(us.referral, 15);
+});
+
 test('profit calculator supports chargeable weight, cubic-foot storage, advertising cost, and FBA placement inputs', () => {
   const { calculateProfitMetrics } = loadProfitHelpers();
   const result = calculateProfitMetrics({
@@ -408,6 +485,13 @@ test('profit calculator supports chargeable weight, cubic-foot storage, advertis
   assert.equal(withPlacement.placement, 1.25);
   assert.equal(withPlacement.totalCost - result.totalCost, 1.25);
   assert.equal(result.profit - withPlacement.profit, 1.25);
+
+  const weightedReturnHandling = calculateProfitMetrics({
+    price: 30, fx: 7.2, purchaseRmb: 0, taxDiscount: 0, freightRateRmb: 0, chargeableWeightKg: 0,
+    packageVolumeM3: 0, referralRate: 0, fbaFee: 0, storageCost: 0,
+    adCost: 0, promoRate: 0, returnRate: 10, returnHandling: 5, placementFee: 0, targetMargin: 0, cvr: 0,
+  });
+  assert.equal(weightedReturnHandling.returns, 3.5);
 
   const forecastStorage = calculateProfitMetrics({
     price: 30, fx: 7.2, purchaseRmb: 50, taxDiscount: 10, freightRateRmb: 8, chargeableWeightKg: 1.2,
@@ -716,7 +800,7 @@ test('theme switch defaults to light, persists the choice, and redraws chart col
 test('profit exchange-rate update fetches the selected market rate and recalculates profit', () => {
   assert.match(html, /async function updateProfitExchangeRate\(\)/);
   assert.match(html, /fetch\('https:\/\/open\.er-api\.com\/v6\/latest\/CNY'\)/);
-  assert.match(html, /fx\.value = \(1 \/ marketRate\)\.toFixed\(2\)/);
+  assert.match(html, /fx\.value = \(1 \/ marketRate\)\.toFixed\(marketFxDecimals\(requestedCurrency\)\)/);
   assert.match(html, /updateProfitCalculator\(\);/);
   assert.match(html, /updateMarketCountry\(\)[\s\S]*?updateProfitExchangeRate\(\);/);
 });
@@ -736,7 +820,7 @@ test('guide tab and non-US/CA market currency switching are available without in
   for (const required of [
     "switchTab('guide')", 'id="module-guide"', '使用流程', '结果定位与提示',
     'value="MX"', 'value="EU"', 'value="UK"', "currency: 'MXN'", "currency: 'EUR'", "currency: 'GBP'", 'autoFees: false',
-    '待手动配置', '该站点暂不估算', "(1 / marketRate).toFixed(2)", "manualRate.value = (liveRates[target] / liveRates[source]).toFixed(2)",
+    '待手动配置', '该站点暂不估算', "marketFxDecimals(requestedCurrency)", "manualRate.value = (liveRates[target] / liveRates[source]).toFixed(2)",
   ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 
   assert.match(html, /country === 'MX' \|\| country === 'EU' \|\| country === 'UK'/);
