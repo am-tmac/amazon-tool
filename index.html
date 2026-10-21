@@ -935,7 +935,7 @@
             </div>
         </div>
         <div id="module-freight" class="calculator-home embedded-calculator">
-            <h2 class="calculator-module-title"><span>运费与仓储计算</span><span class="heading-controls"><label class="market-country">国家/站点<select id="marketCountry" onchange="updateMarketCountry()"><option value="US" selected>美国 / US</option><option value="CA">加拿大 / CA</option><option value="MX">墨西哥 / MX</option><option value="EU">欧洲 / EU</option><option value="UK">英国 / UK</option><option value="JP">日本 / JP</option></select></label><label class="market-fx"><span class="term-tip" tabindex="0" data-tip="汇率：人民币与目标市场货币之间的换算比例。">汇率</span><span id="profitFxLabel" class="market-fx-unit">（人民币/USD）</span><input id="profitFx" data-market-default="1" type="number" min="0" step="0.01" value="7.20" oninput="this.dataset.marketDefault='0'; updateProfitCalculator()"></label><button id="profitRateUpdate" class="market-rate-update" type="button" onclick="updateProfitExchangeRate()">更新汇率</button><span id="profitMarketBadge" class="market-badge">US / USD</span></span></h2>
+            <h2 class="calculator-module-title"><span>运费与仓储计算</span><span class="heading-controls"><label class="market-country">国家/站点<select id="marketCountry" onchange="updateMarketCountry()"><option value="US" selected>美国 / US</option><option value="CA">加拿大 / CA</option><option value="MX">墨西哥 / MX</option><option value="EU">欧洲 / EU</option><option value="UK">英国 / UK</option><option value="JP">日本 / JP</option></select></label><label class="market-fx"><span class="term-tip" tabindex="0" data-tip="汇率：人民币与目标市场货币之间的换算比例。">汇率</span><span id="profitFxLabel" class="market-fx-unit">（人民币/USD）</span><input id="profitFx" data-market-default="1" type="number" min="0" step="0.01" value="7.20" oninput="markProfitFxManual()"></label><button id="profitRateUpdate" class="market-rate-update" type="button" onclick="updateProfitExchangeRate()">更新汇率</button><span id="profitMarketBadge" class="market-badge">US / USD</span></span></h2>
             <div class="calculator-grid freight-grid">
                 <section class="calculator-panel">
                     <div id="cargo-check" class="cargo-check">
@@ -1120,7 +1120,7 @@
         </div>
 
         <button class="btn-action" onclick="fetchRates()">>>> 刷新汇率数据</button>
-        <div class="currency-manual-row"><label class="link-control"><input id="currencyManualToggle" type="checkbox" onchange="updateCurrencyDisplay()">手动汇率</label><label class="field-label">1 <span id="currencyManualSource">CNY</span> = <input id="currencyManualRate" type="number" min="0" step="0.01" placeholder="实时汇率" oninput="calcCurrency('amount')"></label></div>
+        <div class="currency-manual-row"><label class="link-control"><input id="currencyManualToggle" type="checkbox" onchange="updateCurrencyDisplay()">手动汇率</label><label class="field-label">1 <span id="currencyManualSource">CNY</span> = <input id="currencyManualRate" type="number" min="0" step="any" placeholder="实时汇率" oninput="calcCurrency('amount')"></label></div>
 
         <div class="currency-display" id="currencyInfo">
             <div id="rateDisplay">点击刷新按钮获取实时汇率</div>
@@ -1144,7 +1144,7 @@
             <section class="guide-section"><h2>仓储费每月详细计算（美国）</h2><ul><li>仅美国站启用，预测连续 12 个月。库存采用 FIFO 消耗，月度仓储计费库存 =（月初库存 + 月末库存）÷ 2；计划销量超过可售库存时会显示缺货件数。</li><li>日均库存体积按立方英尺计费，内置 1–9 月常规费率和 10–12 月旺季费率。库存利用率周数 = 日均库存 × 13 ÷ 滚动 13 周发货量；达到 22 周后才计入利用率附加费。勾选新卖家低库存资格且日均库存低于 25 ft³ 时，使用新卖家费率并跳过利用率附加费。</li><li>新品首次开卖时可将过去 13 周销量留空；系统先经过完整 13 周观察期，只计算基础仓储费率，之后才按滚动实际销量判断库存利用率附加费。</li><li>利润测算中的“仓储/件” = 预测期仓储总费 ÷ 预测期实际售出总件数；零销量月份的仓储费仍计入总费用。全期没有实际售出量时不虚构单件成本，包含仓储的利润结果会显示为不可用。</li><li>补货建议不会改写计划补货。系统按到仓提前期和安全库存比例计算每月最小建议到仓量；首月无法提前下单的建议会标为“立即安排/已有在途”。固定头程费、MOQ、容量限制、第三方仓成本和入库延误未纳入建议。</li><li>批量填充只写入前 1–12 个月的销量或补货；一键清空只清除月度计划和批量填写框，保留起始月、期初库存及历史销量。</li></ul></section>
             <section class="guide-section"><h2>非美国仓储</h2><ul><li>加拿大、墨西哥、欧洲和英国不启用美国月度预测，保留手动仓储单价和平均库存月数。</li><li>手动仓储/件 = 包装体积（m³）× 35.3147 × 仓储单价（目标币种/ft³/月）× 平均库存月数。</li><li>这些站点的 FBA 配送费暂不自动估算；请以对应站点的 Seller Central 费用或结算报表为准。</li></ul></section>
             <section class="guide-section"><h2>广告费换算</h2><ul><li><strong>CPA</strong> = CPC ÷ CVR；<strong>POS</strong> = 广告订单量 ÷ 月销量。</li><li><strong>ACOS</strong> = CPA ÷ 售价；<strong>混合广告费/件</strong> = CPA × POS，表示摊到每个总订单的平均广告成本。</li><li><strong>ACoAS</strong> = 混合广告费/件 ÷ 售价；<strong>ROAS</strong> = 售价 ÷ CPA。</li><li>CVR 可直接编辑为百分比；点击量和广告订单量都有值、且 CVR 留空或为 0 时，程序用广告订单量 ÷ 点击量补齐。利润测算读取混合广告费/件。</li></ul></section>
-            <section class="guide-section"><h2>利润测算</h2><ul><li>售价、CPC、CVR、广告订单量和月销量统一取自广告费换算；头程、计费重和 FBA 取自运费模块。</li><li>总成本/件 = 采购（扣除退税/折扣） + 头程 + 佣金 + FBA + 入库配置费 + 仓储 + 广告 + 促销 + 退货。</li><li>退货成本 = 售价 × 退货率 + 退货处理费；退货率、处理费、促销费和入库配置费需要手动确认。</li><li>单件结果同时显示站点币种和人民币；销量相关的总费用只显示人民币，并按月销量相乘。</li><li>保本 ACOS =（售价 − 不含广告的成本）÷ 售价；最大 CPC = 售价 × 保本 ACOS × CVR；目标采购上限按目标利润率反推。</li></ul></section>
+            <section class="guide-section"><h2>利润测算</h2><ul><li>售价、CPC、CVR、广告订单量和月销量统一取自广告费换算；头程、计费重和 FBA 取自运费模块。</li><li>总成本/件 = 采购（扣除退税/折扣） + 头程 + 佣金 + FBA + 入库配置费 + 仓储 + 广告 + 促销 + 退货。</li><li>退货成本 =（售价 + 退货处理费）× 退货率；退货率、处理费、促销费和入库配置费需要手动确认。</li><li>单件结果同时显示站点币种和人民币；销量相关的总费用只显示人民币，并按月销量相乘。</li><li>保本 ACOS =（售价 − 不含广告的成本）÷ 售价；最大 CPC = 售价 × 保本 ACOS × CVR；目标采购上限按目标利润率反推。</li></ul></section>
             <section class="guide-section"><h2>汇率与曲线</h2><ul><li>切换站点会自动刷新该站点汇率；“更新汇率”读取 ExchangeRate-API 的 CNY 基准实时数据，显示为 1 目标币 = X 人民币，保留两位小数。</li><li>实时汇率页支持手动汇率覆盖。历史曲线固定以人民币为目标币，支持 1 个月、1 年、5 年；接口不可用时不影响手动换算。</li><li>历史曲线的数据点来自 Frankfurter 工作日参考汇率，不等同于平台结算汇率。</li></ul></section>
             <section class="guide-section"><h2>结果定位与提示</h2><ul><li>点击任一自动结果，页面会滚动到相关输入；缺少的字段会优先高亮，已填写完整时会高亮全部依赖项。</li><li>悬停或键盘聚焦带提示的名称可查看公式、费率范围和适用条件；提示不会改变计算值。</li><li>默认文字颜色表示需要人工确认的基础数据，强调色表示换算或联动结果。API 失败、销量不足、无历史销量和缺货会在状态文字中说明。</li></ul></section>
             <section class="guide-section"><h2>其他工具</h2><ul><li><strong>PDF 聚合：</strong>首次选择文件会按文件名中的数字顺序排序并自动处理；继续添加文件后可重新合并下载。</li><li><strong>格式转换：</strong>图片在浏览器本地转换为 JPG、PNG 或 WEBP，选择文件后点击执行并下载。</li><li><strong>背景移除：</strong>模型在本地浏览器推理，可选择 GPU/WebGPU 或 CPU；首次使用可能需要下载模型，处理期间不要关闭页面。</li><li><strong>主题切换：</strong>主题选择保存在当前浏览器，下次打开会沿用上次选择。</li></ul></section>
@@ -1164,6 +1164,19 @@
     const MARKET_MONEY_FIELDS = ['adPrice', 'adCpc', 'profitPlacementFee', 'profitReturnHandling'];
     const MARKET_INPUT_STATE = {};
     let activeMarketCode = 'US';
+    let profitFxRequestSequence = 0;
+    let profitFxEditVersion = 0;
+    let ratesRequestSequence = 0;
+
+    function markProfitFxManual() {
+        profitFxEditVersion += 1;
+        document.getElementById('profitFx').dataset.marketDefault = '0';
+        updateProfitCalculator();
+    }
+
+    function formatExchangeRate(value) {
+        return Number.isFinite(value) && value > 0 ? String(Number(value.toPrecision(8))) : '-';
+    }
 
     function marketFxDecimals(currency) { return currency === 'JPY' ? 6 : 2; }
 
@@ -1313,6 +1326,34 @@
         return rate * (volumeCm3 / 1000) * storageDays / daysInMonth;
     }
 
+    function findJpBreakEvenPrice(fixedCost, adRate, category, dimensionsCm, weightKg) {
+        // Whole-yen prices: referral base/tax rounding repeats every 50 yen for
+        // the current rates. Split every pricing discontinuity and minimum fee kink.
+        const rules = JP_REFERRAL_RULES_2026[category] || JP_REFERRAL_RULES_2026.other;
+        const ends = [...new Set([600, 1000, ...rules.map(([limit]) => limit)])].sort((a, b) => a - b);
+        const profitAt = price => price - fixedCost - calculateJpReferralFee(price, category, true).total - getJpFbaMetrics(dimensionsCm, weightKg, price).fee - price * adRate;
+        let start = 1;
+        for (const end of ends) {
+            let best = Infinity;
+            for (let offset = 0; offset < 50 && start + offset <= end; offset += 1) {
+                const first = start + offset;
+                const initial = profitAt(first);
+                if (initial >= 0) { best = Math.min(best, first); continue; }
+                const gain = profitAt(first + 50) - initial;
+                // Do not use a slope across a finite interval boundary.
+                if (first + 50 > end || gain <= 0) continue;
+                const cycles = Math.max(1, Math.ceil(-initial / gain));
+                for (let n = Math.max(1, cycles - 1); n <= cycles + 1; n += 1) {
+                    const candidate = first + n * 50;
+                    if (Number.isSafeInteger(candidate) && candidate <= end && profitAt(candidate) >= 0 && profitAt(candidate - 50) < 0) best = Math.min(best, candidate);
+                }
+            }
+            if (Number.isFinite(best)) return best;
+            start = end + 1;
+        }
+        return Infinity;
+    }
+
     function calculateQuickEstimate(values) {
         const market = values.market || 'JP';
         const price = Math.max(0, Number(values.price) || 0);
@@ -1359,16 +1400,7 @@
         let breakEvenPrice = Infinity;
         if (adRate < 1) {
             if (market === 'JP') {
-                const maximumCandidate = Math.max(1000, Math.ceil((purchase + freight + fba + storage) / Math.max(0.01, 1 - adRate) * 4));
-                for (let candidate = 1; candidate <= maximumCandidate; candidate += 1) {
-                    const candidateReferral = calculateJpReferralFee(candidate, values.category || 'other', true).total;
-                    const candidateFba = getJpFbaMetrics(dimensionsCm, weightKg, candidate)?.fee;
-                    if (!Number.isFinite(candidateFba)) continue;
-                    if (candidate - purchase - freight - candidateReferral - candidateFba - storage - candidate * adRate >= 0) {
-                        breakEvenPrice = candidate;
-                        break;
-                    }
-                }
+                breakEvenPrice = findJpBreakEvenPrice(purchase + freight + storage, adRate, values.category || 'other', dimensionsCm, weightKg);
             } else {
                 const variableRate = adRate + referral / price;
                 const fixedCost = purchase + freight + fba + storage;
@@ -1515,12 +1547,13 @@
         pdfFiles.forEach((f, i) => {
             const div = document.createElement('div');
             div.className = 'file-item';
-            div.innerHTML = `<span>${i+1}. ${f.name}</span>
+            div.innerHTML = `<span></span>
                 <span class="file-controls">
                     <span class="control-btn" onclick="movePdf(${i}, -1)" title="上移">▲</span>
                     <span class="control-btn" onclick="movePdf(${i}, 1)" title="下移">▼</span>
                     <span class="control-btn" onclick="removePdf(${i})" title="移除">✕</span>
                 </span>`;
+            div.firstElementChild.textContent = `${i+1}. ${f.name}`;
             list.appendChild(div);
         });
     }
@@ -1650,16 +1683,21 @@
             .join(parsed.separator);
     }
 
-    function parseBoxDimensions(value) {
+    function parseBoxDimensions(value, fieldUnit = 'cm') {
         const trimmed = String(value || "").trim();
         if (!trimmed) return null;
 
         const parts = trimmed.split(/\s*[xX×*]\s*/);
         if (parts.length !== 3 || parts.some(part => part.trim() === "")) return null;
 
+        const suffixOf = part => part.match(/(cm|厘米|in|inch(?:es)?|英寸)\s*$/i)?.[1];
+        const trailingUnit = suffixOf(parts[parts.length - 1]);
         const values = parts.map(part => {
+            const suffix = suffixOf(part) || trailingUnit;
+            const sourceUnit = suffix ? (/^(cm|厘米)$/i.test(suffix) ? 'cm' : 'in') : fieldUnit;
             const cleaned = part.trim().replace(/\s*(?:cm|厘米|in|inch(?:es)?|英寸)\s*$/i, "");
-            return parseFractionNumber(cleaned);
+            const factor = sourceUnit === fieldUnit ? 1 : sourceUnit === 'in' ? 2.54 : 1 / 2.54;
+            return parseFractionNumber(cleaned) * factor;
         });
         if (values.some(number => !Number.isFinite(number) || number <= 0)) return null;
 
@@ -2471,9 +2509,9 @@
         if (storageForecast) document.getElementById('profitStorageTotalValue').textContent = `计划期总仓储 ${rmbMoney(storageForecast.totalStorageCost, fx)}`;
         else setProfitTotalMetric('profitStorageTotalValue', result.storage, fx, monthlyUnits);
         setProfitTotalMetric('profitAdTotalValue', result.ad, fx, monthlyUnits);
-        if (storageCost === null && usesUsStorageForecast) {
-            document.getElementById('profitTotalCostTotalValue').textContent = '总费用（仓储/件不可用）';
-            document.getElementById('profitTotalValue').textContent = '总利润（仓储/件不可用）';
+        if (storageCost === null && usesDetailedStorageForecast) {
+            document.getElementById('profitTotalCostTotalValue').textContent = '总费用（仓储/件不可用：请填写有实际售出的月度库存计划）';
+            document.getElementById('profitTotalValue').textContent = '总利润（仓储/件不可用：请填写有实际售出的月度库存计划）';
         } else {
             setProfitTotalMetric('profitTotalCostTotalValue', result.totalCost, fx, monthlyUnits);
             setProfitTotalMetric('profitTotalValue', result.profit, fx, monthlyUnits, '总利润');
@@ -2523,6 +2561,7 @@
         if (storageSource) storageSource.textContent = isJp ? '2026 日本站官方费率' : '2026 美国站非危险品费率参考';
         if (storageTable) storageTable.setAttribute('aria-label', isJp ? '日本 FBA 仓储费每月详细计算' : '美国仓储费每月详细计算');
         if (storageWeeksHeader) storageWeeksHeader.textContent = isJp ? '月末库存' : '利用率';
+        if (fx) fx.step = String(10 ** -marketFxDecimals(market.currency));
         if (fx && (!fx.value || fx.dataset.marketDefault === '1')) { fx.value = Number(market.fx).toFixed(marketFxDecimals(market.currency)); fx.dataset.marketDefault = '1'; }
         const applyFeeDefault = (field, value) => {
             if (!field || field.dataset.marketDefault !== '1') return;
@@ -2545,15 +2584,22 @@
         if (badge) badge.textContent = `${document.getElementById('marketCountry')?.value || 'US'} / ${market.currency}`;
         updateCargoCheck();
         updateAdCalculator();
-        updateProfitExchangeRate();
+        updateProfitExchangeRate(true);
     }
 
-    async function updateProfitExchangeRate() {
+    async function updateProfitExchangeRate(automatic = false) {
         const button = document.getElementById('profitRateUpdate');
         const fx = document.getElementById('profitFx');
         const market = currentMarket();
+        const requestSequence = ++profitFxRequestSequence;
         if (!button || !fx) return;
-        const originalText = button.textContent;
+        if (automatic && fx.dataset.marketDefault === '0') {
+            button.disabled = false;
+            button.textContent = '更新汇率';
+            return;
+        }
+        const editVersion = profitFxEditVersion;
+        const originalText = '更新汇率';
         const requestedCurrency = market.currency;
         button.disabled = true;
         button.textContent = '正在更新...';
@@ -2563,16 +2609,16 @@
             const data = await response.json();
             const marketRate = Number(data?.rates?.[requestedCurrency]);
             if (data?.result !== 'success' || !Number.isFinite(marketRate) || marketRate <= 0) throw new Error('invalid rate');
-            if (currentMarket().currency !== requestedCurrency) return;
+            if (requestSequence !== profitFxRequestSequence || editVersion !== profitFxEditVersion || currentMarket().currency !== requestedCurrency) return;
             fx.value = (1 / marketRate).toFixed(marketFxDecimals(requestedCurrency));
             fx.dataset.marketDefault = '1';
             updateProfitCalculator();
             button.textContent = '已更新';
         } catch (error) {
             console.error('利润汇率更新失败', error);
-            button.textContent = '更新失败';
+            if (requestSequence === profitFxRequestSequence) button.textContent = '更新失败';
         } finally {
-            window.setTimeout(() => { button.disabled = false; button.textContent = originalText; }, 1500);
+            window.setTimeout(() => { if (requestSequence === profitFxRequestSequence) { button.disabled = false; button.textContent = originalText; } }, 1500);
         }
     }
 
@@ -2603,7 +2649,7 @@
         const sourceEl = sourceUnit === 'in' ? inEl : cmEl;
         const targetEl = sourceUnit === 'in' ? cmEl : inEl;
         if (!sourceEl || !targetEl) return;
-        const dimensions = parseBoxDimensions(sourceEl.value);
+        const dimensions = parseBoxDimensions(sourceEl.value, sourceUnit);
         if (!dimensions) return;
         const factor = sourceUnit === 'in' ? 2.54 : 1 / 2.54;
         targetEl.value = dimensions.map(value => fmtNumber(value * factor)).join('*');
@@ -2751,10 +2797,13 @@
     /* --- 实时汇率 (双向逻辑) --- */
     async function fetchRates() {
         const btn = document.querySelector('button[onclick="fetchRates()"]');
+        const requestSequence = ++ratesRequestSequence;
+        const profitSequence = profitFxRequestSequence;
         btn.innerText = "正在更新...";
         try {
             const res = await fetch('https://open.er-api.com/v6/latest/CNY');
             const data = await res.json();
+            if (requestSequence !== ratesRequestSequence) return;
             if(data.result === "success") {
                 liveRates = data.rates;
                 lastBase = data.base_code;
@@ -2764,10 +2813,10 @@
                 const source = document.getElementById('sourceCurrency').value;
                 const target = document.getElementById('targetCurrency').value;
                 const manualRate = document.getElementById('currencyManualRate');
-                if (manualRate && liveRates[source] && liveRates[target]) manualRate.value = (liveRates[target] / liveRates[source]).toFixed(2);
+                if (manualRate && !document.getElementById('currencyManualToggle')?.checked && document.activeElement !== manualRate && liveRates[source] && liveRates[target]) manualRate.value = formatExchangeRate(liveRates[target] / liveRates[source]);
                 const market = currentMarket();
                 const profitFx = document.getElementById('profitFx');
-                if (profitFx && !document.getElementById('currencyManualToggle')?.checked && liveRates.CNY && liveRates[market.currency]) {
+                if (profitFx && profitFx.dataset.marketDefault !== '0' && profitSequence === profitFxRequestSequence && liveRates.CNY && liveRates[market.currency]) {
                     profitFx.value = (liveRates.CNY / liveRates[market.currency]).toFixed(marketFxDecimals(market.currency));
                     profitFx.dataset.marketDefault = '1';
                     updateProfitCalculator();
@@ -2791,7 +2840,7 @@
         const sourceLabel = document.getElementById('currencyManualSource');
         const manualRate = document.getElementById('currencyManualRate');
         if (sourceLabel) sourceLabel.textContent = source;
-        if (manualRate && liveRates[source] && liveRates[target]) manualRate.value = (liveRates[target] / liveRates[source]).toFixed(2);
+        if (manualRate && !document.getElementById('currencyManualToggle')?.checked && document.activeElement !== manualRate && liveRates[source] && liveRates[target]) manualRate.value = formatExchangeRate(liveRates[target] / liveRates[source]);
         calcCurrency('amount');
         updateCurrencyTrend();
     };
@@ -2876,7 +2925,7 @@
         const latest = points[points.length - 1];
         ctx.fillStyle = themeColor('--accent'); ctx.beginPath(); ctx.arc(x(points.length - 1), y(latest.value), 3, 0, Math.PI * 2); ctx.fill();
         ctx.fillStyle = themeColor('--text-subtle'); ctx.font = '700 11px Share Tech Mono, monospace';
-        ctx.fillText(`1 ${source} = ${latest.value.toFixed(2)} ${target}`, pad.left, 11);
+        ctx.fillText(`1 ${source} = ${formatExchangeRate(latest.value)} ${target}`, pad.left, 11);
         ctx.fillText(points[0].date.slice(5), pad.left, height - 5);
         const finalLabel = points[points.length - 1].date.slice(5); const labelWidth = ctx.measureText(finalLabel).width;
         ctx.fillText(finalLabel, width - pad.right - labelWidth, height - 5);
@@ -2921,7 +2970,7 @@
             drawCurrencyTrend(points, source, target);
             const first = points[0].value, latest = points[points.length - 1].value;
             const change = first ? (latest / first - 1) * 100 : 0;
-            status.textContent = `${points.length} 个工作日参考汇率；1 ${source} = ${latest.toFixed(2)} ${target}；区间变化 ${change >= 0 ? '+' : ''}${change.toFixed(2)}%。数据源：Frankfurter。`;
+            status.textContent = `${points.length} 个工作日参考汇率；1 ${source} = ${formatExchangeRate(latest)} ${target}；区间变化 ${change >= 0 ? '+' : ''}${change.toFixed(2)}%。数据源：Frankfurter。`;
         } catch (error) {
             status.textContent = '历史汇率暂不可用；实时换算不受影响。';
             currencyTrendSnapshot = null;

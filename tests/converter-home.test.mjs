@@ -243,7 +243,7 @@ test('cargo checker calculates volume weight and cargo type from cm dimensions',
   assert.deepEqual(normalize(parseBoxDimensions('11*11*11')), [11, 11, 11]);
   assert.deepEqual(normalize(parseBoxDimensions('11*11*11cm')), [11, 11, 11]);
   assert.deepEqual(normalize(parseBoxDimensions('11cm*12cm*13cm')), [11, 12, 13]);
-  assert.deepEqual(normalize(parseBoxDimensions('4.33*4.33*4.33in')), [4.33, 4.33, 4.33]);
+  assert.deepEqual(normalize(parseBoxDimensions('4.33*4.33*4.33in', 'in')), [4.33, 4.33, 4.33]);
   assert.deepEqual(normalize(parseBoxDimensions('11 x 12 x 13')), [11, 12, 13]);
   assert.equal(parseBoxDimensions('11x11'), null);
 
@@ -441,6 +441,7 @@ test('quick Japan estimate calculates automated referral, FBA, storage, ads, pro
     extractFunctionSource('calculateJpReferralFee'),
     extractFunctionSource('getJpFbaMetrics'),
     extractFunctionSource('calculateJpFbaStorageFee'),
+    extractFunctionSource('findJpBreakEvenPrice'),
     extractFunctionSource('calculateQuickEstimate'),
     '({ calculateQuickEstimate })',
   ].join('\n');
@@ -470,6 +471,7 @@ test('quick Japan break-even recalculates category commission and low-price FBA 
     extractFunctionSource('calculateJpReferralFee'),
     extractFunctionSource('getJpFbaMetrics'),
     extractFunctionSource('calculateJpFbaStorageFee'),
+    extractFunctionSource('findJpBreakEvenPrice'),
     extractFunctionSource('calculateQuickEstimate'),
     '({ calculateQuickEstimate })',
   ].join('\n');
@@ -497,6 +499,7 @@ test('quick US estimate reuses automated US FBA and simple storage assumptions',
     extractFunctionSource('getFbaSizeTier'),
     extractFunctionSource('estimateFbaFee'),
     extractFunctionSource('calculateFbaMetrics'),
+    extractFunctionSource('findJpBreakEvenPrice'),
     extractFunctionSource('calculateQuickEstimate'),
     '({ calculateQuickEstimate })',
   ].join('\n');
@@ -750,7 +753,7 @@ test('currency converter covers requested market currencies and renders a stable
   for (const required of [
     'CAD 加拿大', 'VND 越南', 'THB 泰国', 'BRL 巴西', 'MXN 墨西哥', 'IDR 印尼', 'MYR 马来西亚', 'PHP 菲律宾',
     'AED 阿联酋', 'SAR 沙特', 'ZAR 南非', 'id="currencyTrendChart"', 'function updateCurrencyTrend', 'function drawCurrencyTrend',
-    'api.frankfurter.dev/v1/', 'FRANKFURTER_HISTORICAL_CURRENCIES', "!FRANKFURTER_HISTORICAL_CURRENCIES.has(source)", 'currencyTrendRange', '1个月', '1年', '5年', '1 ${source} = ${latest.value.toFixed(2)} ${target}', 'id="cargo-check"', 'scrollConverterSection', 'aspect-ratio: 4 / 1', 'canvas.clientHeight || width / 4',
+    'api.frankfurter.dev/v1/', 'FRANKFURTER_HISTORICAL_CURRENCIES', "!FRANKFURTER_HISTORICAL_CURRENCIES.has(source)", 'currencyTrendRange', '1个月', '1年', '5年', '1 ${source} = ${formatExchangeRate(latest.value)} ${target}', 'id="cargo-check"', 'scrollConverterSection', 'aspect-ratio: 4 / 1', 'canvas.clientHeight || width / 4',
   ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   assert.match(html, /window\.updateCurrencyDisplay\s*=\s*\(\)\s*=>\s*\{[\s\S]*?currencyManualSource[\s\S]*?currencyManualRate/);
   assert.match(html, /<option value="USD">USD 美国<\/option>/);
@@ -888,11 +891,11 @@ test('theme switch defaults to light, persists the choice, and redraws chart col
 });
 
 test('profit exchange-rate update fetches the selected market rate and recalculates profit', () => {
-  assert.match(html, /async function updateProfitExchangeRate\(\)/);
+  assert.match(html, /async function updateProfitExchangeRate\(automatic = false\)/);
   assert.match(html, /fetch\('https:\/\/open\.er-api\.com\/v6\/latest\/CNY'\)/);
   assert.match(html, /fx\.value = \(1 \/ marketRate\)\.toFixed\(marketFxDecimals\(requestedCurrency\)\)/);
   assert.match(html, /updateProfitCalculator\(\);/);
-  assert.match(html, /updateMarketCountry\(\)[\s\S]*?updateProfitExchangeRate\(\);/);
+  assert.match(html, /updateMarketCountry\(\)[\s\S]*?updateProfitExchangeRate\(true\);/);
 });
 
 test('site navigation and converter jumps are consolidated into a desktop sidebar', () => {
@@ -910,7 +913,7 @@ test('guide tab and non-US/CA market currency switching are available without in
   for (const required of [
     "switchTab('guide')", 'id="module-guide"', '使用流程', '结果定位与提示',
     'value="MX"', 'value="EU"', 'value="UK"', "currency: 'MXN'", "currency: 'EUR'", "currency: 'GBP'", 'autoFees: false',
-    '待手动配置', '该站点暂不估算', "marketFxDecimals(requestedCurrency)", "manualRate.value = (liveRates[target] / liveRates[source]).toFixed(2)",
+    '待手动配置', '该站点暂不估算', "marketFxDecimals(requestedCurrency)", "manualRate.value = formatExchangeRate(liveRates[target] / liveRates[source])",
   ]) assert.match(html, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
 
   assert.match(html, /country === 'MX' \|\| country === 'EU' \|\| country === 'UK'/);
